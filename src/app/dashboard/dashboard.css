@@ -1,0 +1,559 @@
+.dashboard-wrapper {
+  min-height: 100vh;
+  background-color: var(--senati-light-bg);
+  color: var(--senati-text-main);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.senati-logo-badge {
+  width: 28px;
+  height: 28px;
+  background-color: var(--senati-blue);
+  border-radius: 7px;
+  flex-shrink: 0;
+}
+
+.leading-none {
+  line-height: 1.1;
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+/* =================================================== */
+/* SUBTLE GHOST BUTTONS & CONTROLS                     */
+/* =================================================== */
+.btn-ghost {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--senati-text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.3rem 0.55rem;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-ghost:hover {
+  background-color: var(--senati-pill-hover);
+  color: var(--senati-text-main);
+}
+
+.btn-ghost-icon {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--senati-text-muted);
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-ghost-icon:hover {
+  background-color: var(--senati-pill-hover);
+  color: var(--senati-text-main);
+}
+
+.btn-senati-subtle {
+  background-color: #003b7a;
+  color: #ffffff;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+body.dark-theme .btn-senati-subtle {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+
+.btn-senati-subtle:hover {
+  filter: brightness(1.1);
+  color: #ffffff;
+}
+
+.hover-danger:hover {
+  color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* =================================================== */
+/* RESPONSIVE FILTER BAR                               */
+/* =================================================== */
+.filter-tabs-scroll {
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  padding-bottom: 2px;
+}
+
+.filter-tabs-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.filter-tab {
+  background: transparent;
+  border: none;
+  color: var(--senati-text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.filter-tab:hover {
+  color: var(--senati-text-main);
+  background-color: var(--senati-pill-hover);
+}
+
+.filter-tab.active {
+  color: var(--senati-text-main);
+  font-weight: 700;
+  background-color: var(--senati-pill-hover);
+}
+
+.filter-count {
+  font-size: 0.72rem;
+  opacity: 0.75;
+  font-weight: normal;
+}
+
+.ghost-select {
+  border-color: var(--senati-border);
+  background-color: transparent;
+  color: var(--senati-text-muted);
+  font-size: 0.8rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+}
+
+/* =================================================== */
+/* RESPONSIVE TASK ROWS                                */
+/* =================================================== */
+.task-row-card {
+  background-color: var(--senati-card-bg);
+  border: 1px solid var(--senati-border);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.task-row-card:hover {
+  border-color: #cbd5e1;
+}
+
+body.dark-theme .task-row-card:hover {
+  border-color: #475569;
+}
+
+.task-completed {
+  opacity: 0.5;
+}
+
+.task-urgent {
+  border-left: 3px solid #f59e0b;
+}
+
+.task-overdue {
+  border-left: 3px solid #ef4444;
+}
+
+/* Status Checkbox Button */
+.status-check-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--senati-border);
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  color: white;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.status-check-btn:hover {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.status-check-btn.checked {
+  border-color: #10b981;
+  background-color: #10b981;
+}
+
+.status-check-btn.checked i {
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+/* Subtle Tags with Proper Spacing & Badges */
+.subtle-course-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--senati-text-main);
+  background-color: var(--senati-pill-hover);
+  padding: 0.15rem 0.55rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 420px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.subtle-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.subtle-dot-lg {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.subtle-priority-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.12rem 0.5rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.subtle-priority-tag.priority-alta {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.12);
+}
+
+.subtle-priority-tag.priority-media {
+  color: #f59e0b;
+  background-color: rgba(245, 158, 11, 0.12);
+}
+
+.subtle-priority-tag.priority-baja {
+  color: #0284c7;
+  background-color: rgba(2, 132, 199, 0.12);
+}
+
+.subtle-progress-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.14);
+  padding: 0.12rem 0.5rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.task-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--senati-text-main);
+  word-break: break-word;
+}
+
+.task-desc {
+  font-size: 0.8rem;
+  color: var(--senati-text-muted);
+  line-height: 1.4;
+}
+
+/* Subtle Action Buttons */
+.task-action-btn {
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0.4rem;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+}
+
+.task-action-btn:hover {
+  background-color: var(--senati-pill-hover);
+  color: var(--senati-text-main);
+}
+
+/* Modales & Forms */
+.form-control-clean {
+  font-size: 0.85rem;
+  border-color: var(--senati-border);
+  background-color: var(--senati-input-bg);
+  color: var(--senati-text-main);
+  border-radius: 7px;
+}
+
+.form-control-clean:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.12);
+}
+
+.course-list-item {
+  background-color: var(--senati-pill-hover);
+  border: 1px solid var(--senati-border);
+}
+
+.color-picker-box {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s ease;
+}
+
+.color-picker-box:hover {
+  transform: scale(1.15);
+}
+
+.color-picker-box.active-color {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px #0284c7;
+}
+
+/* Toast Sutil */
+.toast-floating-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2000;
+  animation: slideInUp 0.25s ease;
+  max-width: calc(100vw - 40px);
+}
+
+.custom-toast {
+  padding: 0.55rem 1rem;
+  border-radius: 30px;
+  color: #ffffff;
+  font-size: 0.83rem;
+}
+
+.toast-success {
+  background: #059669;
+}
+
+.toast-info {
+  background: #0284c7;
+}
+
+.toast-danger {
+  background: #dc2626;
+}
+
+.toast-icon-circle {
+  width: 22px;
+  height: 22px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+.btn-close-toast {
+  filter: invert(1) grayscale(100%) brightness(200%);
+  opacity: 0.7;
+  font-size: 0.65rem;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =================================================== */
+/* MOBILE SPECIFIC OPTIMIZATIONS (< 576px)             */
+/* =================================================== */
+@media (max-width: 575.98px) {
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .task-row-card {
+    padding: 12px !important;
+  }
+
+  .task-actions-row {
+    border-top: 1px solid var(--senati-border);
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .subtle-course-tag {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .filter-tabs-scroll {
+    padding-bottom: 6px;
+    margin-bottom: 2px;
+  }
+
+  .toast-floating-container {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    max-width: 100%;
+  }
+
+  .custom-toast {
+    width: 100%;
+  }
+}
+
+.mobile-menu-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 1040;
+  animation: fadeInBackdrop 0.15s ease forwards;
+}
+
+.mobile-nav-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 16px;
+  left: auto;
+  width: 270px;
+  max-width: calc(100vw - 32px);
+  background-color: var(--senati-navbar-bg);
+  border: 1px solid var(--senati-border) !important;
+  border-radius: 16px;
+  z-index: 1050;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3) !important;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: scaleFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes fadeInBackdrop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* =================================================== */
+/* MODAL BACKDROP DESVANECIDO / BLUR                   */
+/* =================================================== */
+.modal-backdrop-custom {
+  background-color: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  animation: fadeInModalBackdrop 0.2s ease forwards;
+}
+
+@keyframes fadeInModalBackdrop {
+  from {
+    background-color: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0px);
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(5px);
+  }
+}
+
+.mobile-menu-link {
+  background: transparent;
+  border: none;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--senati-text-main);
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.mobile-menu-link:hover, .mobile-menu-link:active {
+  background-color: var(--senati-pill-hover);
+  color: var(--senati-text-main);
+}
+
+.mobile-menu-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: var(--senati-pill-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.user-avatar-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--senati-blue);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}

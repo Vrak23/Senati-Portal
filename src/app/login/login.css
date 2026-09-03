@@ -1,0 +1,12 @@
+.login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+}
+
+.senati-badge {
+  width: 60px;
+  height: 60px;
+  background-color: var(--senati-blue);
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 59, 122, 0.25);
+}

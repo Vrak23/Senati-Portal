@@ -1,0 +1,529 @@
+<div class="dashboard-wrapper">
+  <!-- Navbar Minimalista -->
+  <header class="navbar bg-white border-bottom sticky-top py-2 px-3 px-md-4 shadow-none">
+    <div class="container d-flex justify-content-between align-items-center" style="max-width: 1080px;">
+      <!-- Brand Minimal -->
+      <div class="d-flex align-items-center gap-2">
+        <div class="senati-logo-badge d-flex align-items-center justify-content-center">
+          <i class="bi bi-check2 text-white fs-5"></i>
+        </div>
+        <div>
+          <span class="fw-bold text-dark fs-6 tracking-tight d-block leading-none">SENATI Tareas</span>
+          <small class="text-muted" style="font-size: 0.7rem;">4° Semestre</small>
+        </div>
+      </div>
+
+      <!-- Desktop Navbar Actions (>= 768px) -->
+      <div class="d-none d-md-flex align-items-center gap-2">
+        <!-- Cursos Modal Button -->
+        <button 
+          (click)="openGestionCursosModal()" 
+          class="btn btn-ghost btn-sm px-2"
+          title="Administrar cursos">
+          <i class="bi bi-journal-bookmark me-1 text-primary"></i>
+          <span>Cursos ({{ cursos.length }})</span>
+        </button>
+
+        <!-- Blackboard Link Directo -->
+        <a href="https://senati.blackboard.com/" target="_blank" class="btn btn-ghost btn-sm px-2" title="Abrir Blackboard">
+          <i class="bi bi-box-arrow-up-right me-1 text-muted"></i>
+          <span>Blackboard</span>
+        </a>
+
+        <!-- Central Hub Link -->
+        <a href="https://central-de-estudio.vercel.app/" class="btn btn-ghost btn-sm px-2" title="Volver a Central Hub">
+          <i class="bi bi-grid me-1 text-muted"></i>
+          <span>Hub</span>
+        </a>
+
+        <!-- Notificaciones Web -->
+        <button 
+          *ngIf="notificationService.isSupported && notificationService.permission !== 'granted'" 
+          (click)="enableNotifications()" 
+          class="btn btn-ghost btn-sm px-2 text-warning"
+          title="Activar alertas en el navegador">
+          <i class="bi bi-bell me-1"></i> Alertas
+        </button>
+
+        <div class="vr mx-1 opacity-25" style="height: 18px;"></div>
+
+        <!-- Botón Modo Oscuro Desktop -->
+        <button 
+          (click)="toggleTheme()" 
+          class="btn btn-ghost-icon btn-sm"
+          [title]="isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+          <i class="bi" [ngClass]="isDarkMode ? 'bi-sun text-warning' : 'bi-moon-stars text-muted'"></i>
+        </button>
+
+        <!-- Logout Desktop -->
+        <button (click)="onLogout()" class="btn btn-ghost-icon btn-sm text-muted hover-danger" title="Cerrar Sesión">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Mobile Hamburger Button (< 768px) -->
+      <div class="d-flex d-md-none align-items-center gap-1">
+        <!-- Botón Modo Oscuro Rápido Mobile -->
+        <button 
+          (click)="toggleTheme()" 
+          class="btn btn-ghost-icon btn-sm"
+          [title]="isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+          <i class="bi" [ngClass]="isDarkMode ? 'bi-sun text-warning' : 'bi-moon-stars text-muted'"></i>
+        </button>
+
+        <!-- Hamburger Toggle -->
+        <button 
+          (click)="mobileMenuOpen = !mobileMenuOpen" 
+          class="btn btn-ghost-icon btn-sm" 
+          aria-label="Abrir menú">
+          <i class="bi fs-5" [ngClass]="mobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Backdrop & Drawer Menu -->
+    <div *ngIf="mobileMenuOpen" class="mobile-menu-backdrop" (click)="mobileMenuOpen = false"></div>
+    <div *ngIf="mobileMenuOpen" class="mobile-nav-panel border-top p-3 d-md-none shadow-lg fade-in">
+      <!-- Profile Header -->
+      <div class="d-flex align-items-center gap-3 pb-3 mb-2 border-bottom">
+        <div class="user-avatar-circle">
+          {{ userInitials }}
+        </div>
+        <div class="min-w-0">
+          <div class="fw-bold text-dark small text-truncate">{{ userName }} {{ userLastName }}</div>
+          <div class="text-muted" style="font-size: 0.72rem;">Sesión Activa &bull; 4° Semestre</div>
+        </div>
+      </div>
+
+      <!-- Clean Menu Links List -->
+      <div class="d-flex flex-column gap-1">
+        <button (click)="openGestionCursosModal(); mobileMenuOpen = false" class="mobile-menu-link">
+          <div class="mobile-menu-icon-box text-primary">
+            <i class="bi bi-journal-bookmark"></i>
+          </div>
+          <span class="flex-grow-1 text-start">Gestionar Cursos</span>
+          <span class="badge bg-secondary-subtle text-secondary small">{{ cursos.length }}</span>
+        </button>
+
+        <a href="https://senati.blackboard.com/" target="_blank" (click)="mobileMenuOpen = false" class="mobile-menu-link text-decoration-none">
+          <div class="mobile-menu-icon-box text-dark">
+            <i class="bi bi-window-sidebar"></i>
+          </div>
+          <span class="flex-grow-1 text-start text-dark">Blackboard</span>
+          <i class="bi bi-box-arrow-up-right text-muted small"></i>
+        </a>
+
+        <a href="https://central-de-estudio.vercel.app/" (click)="mobileMenuOpen = false" class="mobile-menu-link text-decoration-none">
+          <div class="mobile-menu-icon-box text-primary">
+            <i class="bi bi-grid"></i>
+          </div>
+          <span class="flex-grow-1 text-start text-dark">Central Hub</span>
+          <i class="bi bi-chevron-right text-muted small"></i>
+        </a>
+
+        <button 
+          *ngIf="notificationService.isSupported && notificationService.permission !== 'granted'" 
+          (click)="enableNotifications(); mobileMenuOpen = false" 
+          class="mobile-menu-link text-warning">
+          <div class="mobile-menu-icon-box text-warning">
+            <i class="bi bi-bell"></i>
+          </div>
+          <span class="flex-grow-1 text-start">Activar Alertas Web</span>
+        </button>
+      </div>
+
+      <!-- Logout Divider & Button -->
+      <div class="pt-2 mt-2 border-top">
+        <button (click)="onLogout()" class="mobile-menu-link text-danger w-100">
+          <div class="mobile-menu-icon-box text-danger">
+            <i class="bi bi-box-arrow-right"></i>
+          </div>
+          <span class="flex-grow-1 text-start font-medium">Cerrar Sesión</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal Más Amplio y Respirable (max-width: 1080px) -->
+  <main class="container py-4 py-md-5" style="max-width: 1080px;">
+    <!-- Barra Superior de Tareas -->
+    <div class="d-flex justify-content-between align-items-center gap-2 mb-4">
+      <div>
+        <h2 class="h4 fw-bold mb-0 text-dark">Mis Tareas</h2>
+        <p class="text-muted small mb-0 mt-1">
+          <span *ngIf="tareasPendientes > 0">
+            <strong>{{ tareasPendientes }}</strong> pendiente(s)
+            <span *ngIf="tareasUrgentes > 0" class="text-warning fw-semibold ms-1">&bull; {{ tareasUrgentes }} por vencer</span>
+          </span>
+        </p>
+      </div>
+
+      <button (click)="openAddTareaModal()" class="btn btn-senati-subtle d-flex align-items-center gap-2 py-2 px-3 flex-shrink-0 shadow-sm">
+        <i class="bi bi-plus-lg"></i>
+        <span>Nueva Tarea</span>
+      </button>
+    </div>
+
+    <!-- Barra de Filtros Responsive -->
+    <div class="filters-bar-container d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-4 pb-2 border-bottom">
+      <!-- Tabs Horizontales -->
+      <div class="filter-tabs-scroll d-flex align-items-center gap-1">
+        <button 
+          type="button" 
+          class="filter-tab" 
+          [class.active]="filtroEstado === 'todos'" 
+          (click)="filtroEstado = 'todos'">
+          Todas <span class="filter-count">{{ totalTareas }}</span>
+        </button>
+        <button 
+          type="button" 
+          class="filter-tab" 
+          [class.active]="filtroEstado === 'pendiente'" 
+          (click)="filtroEstado = 'pendiente'">
+          Pendientes <span class="filter-count">{{ tareasPendientes }}</span>
+        </button>
+        <button 
+          type="button" 
+          class="filter-tab" 
+          [class.active]="filtroEstado === 'en_progreso'" 
+          (click)="filtroEstado = 'en_progreso'">
+          En Progreso <span class="filter-count">{{ tareasEnProgreso }}</span>
+        </button>
+        <button 
+          type="button" 
+          class="filter-tab" 
+          [class.active]="filtroEstado === 'entregado'" 
+          (click)="filtroEstado = 'entregado'">
+          Entregadas <span class="filter-count">{{ tareasEntregadas }}</span>
+        </button>
+      </div>
+
+      <!-- Selector de Curso en Desktop/Mobile -->
+      <div *ngIf="cursos.length > 0" class="d-flex align-items-center flex-shrink-0">
+        <select class="form-select form-select-sm ghost-select w-100" [(ngModel)]="filtroCursoId" style="min-width: 180px;">
+          <option value="todos">Todos los cursos</option>
+          <option *ngFor="let c of cursos" [value]="c.id">{{ c.nombre }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Lista de Tareas Amplia y Limpia -->
+    <div *ngIf="filteredTareas.length > 0; else emptyStateTemplate" class="d-flex flex-column gap-3">
+      <div 
+        *ngFor="let t of filteredTareas" 
+        class="task-row-card p-3 p-md-3 rounded-3"
+        [class.task-completed]="t.estado === 'entregado'"
+        [class.task-urgent]="isTaskDueSoon(t.fecha_limite) && t.estado !== 'entregado'"
+        [class.task-overdue]="isTaskOverdue(t.fecha_limite) && t.estado !== 'entregado'">
+
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
+          
+          <!-- Lado Izquierdo: Checkbox + Meta Tags + Título y Descripción -->
+          <div class="d-flex align-items-start gap-3 flex-grow-1 w-100">
+            <!-- Botón Checkbox -->
+            <button 
+              type="button" 
+              (click)="cambiarEstadoTarea(t, t.estado === 'entregado' ? 'pendiente' : 'entregado')"
+              class="status-check-btn mt-1 flex-shrink-0" 
+              [class.checked]="t.estado === 'entregado'"
+              [title]="t.estado === 'entregado' ? 'Marcar pendiente' : 'Completar tarea'">
+              <i *ngIf="t.estado === 'entregado'" class="bi bi-check-lg"></i>
+            </button>
+
+            <!-- Textos de Tarea -->
+            <div class="flex-grow-1 min-w-0">
+              <!-- Título de la Tarea (Elemento Principal) -->
+              <h6 class="task-title mb-1 text-dark" [class.text-decoration-line-through]="t.estado === 'entregado'">
+                {{ t.titulo }}
+              </h6>
+
+              <!-- Fila de Etiquetas: Curso, Prioridad, Estado -->
+              <div class="d-flex flex-wrap align-items-center gap-2 mt-1 mb-1">
+                <span class="subtle-course-tag">
+                  <span class="subtle-dot" [style.background-color]="t.curso?.color || '#0284c7'"></span>
+                  {{ t.curso?.nombre || 'General' }}
+                </span>
+
+                <span class="subtle-priority-tag" [ngClass]="'priority-' + t.prioridad">
+                  {{ t.prioridad }}
+                </span>
+
+                <span *ngIf="t.estado === 'en_progreso'" class="subtle-progress-tag">
+                  en progreso
+                </span>
+              </div>
+
+              <!-- Descripción -->
+              <p *ngIf="t.descripcion" class="task-desc text-muted small mb-0 mt-1 text-break">
+                {{ t.descripcion }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Lado Derecho / Fila Inferior en Mobile: Fecha y Acciones -->
+          <div class="task-actions-row d-flex align-items-center justify-content-between justify-content-sm-end gap-3 w-100 w-sm-auto pt-2 pt-sm-0 border-top border-sm-0 mt-1 mt-sm-0">
+            <!-- Fecha Límite -->
+            <div class="d-flex align-items-center gap-1 text-nowrap" [class.text-danger]="isTaskOverdue(t.fecha_limite) && t.estado !== 'entregado'" [class.text-warning]="isTaskDueSoon(t.fecha_limite) && t.estado !== 'entregado'" [class.text-muted]="t.estado === 'entregado' || (!isTaskOverdue(t.fecha_limite) && !isTaskDueSoon(t.fecha_limite))">
+              <i class="bi bi-clock opacity-75" style="font-size: 0.8rem;"></i>
+              <span class="fw-medium" style="font-size: 0.82rem;">{{ formatDate(t.fecha_limite) }}</span>
+            </div>
+
+            <!-- Acciones de Botones -->
+            <div class="d-flex align-items-center gap-1 flex-shrink-0">
+              <!-- Link Entrega -->
+              <a *ngIf="t.link_entrega" [href]="t.link_entrega" target="_blank" class="task-action-btn text-muted" title="Abrir enlace de entrega">
+                <i class="bi bi-box-arrow-up-right"></i>
+              </a>
+
+              <!-- Botón Rápido En Progreso -->
+              <button 
+                *ngIf="t.estado !== 'entregado'" 
+                (click)="cambiarEstadoTarea(t, t.estado === 'en_progreso' ? 'pendiente' : 'en_progreso')"
+                class="task-action-btn" 
+                [class.text-primary]="t.estado === 'en_progreso'"
+                [class.text-muted]="t.estado !== 'en_progreso'"
+                title="Alternar En Progreso">
+                <i class="bi bi-arrow-repeat"></i>
+              </button>
+
+              <!-- Editar -->
+              <button class="task-action-btn text-muted" type="button" (click)="openEditTareaModal(t)" title="Editar">
+                <i class="bi bi-pencil"></i>
+              </button>
+
+              <!-- Eliminar -->
+              <button class="task-action-btn text-muted hover-danger" type="button" (click)="deleteTarea(t)" title="Eliminar">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <ng-template #emptyStateTemplate>
+      <div class="text-center py-5 my-4 bg-white rounded-3 border p-4">
+        <i class="bi bi-check2-circle text-muted fs-1 mb-2 opacity-50 d-block"></i>
+        <h6 class="fw-semibold text-dark mb-1">No hay tareas aquí</h6>
+        <p class="text-muted small mb-3">Tu lista de pendientes está limpia.</p>
+        <button (click)="openAddTareaModal()" class="btn btn-senati-subtle btn-sm">
+          <i class="bi bi-plus me-1"></i> Crear Tarea
+        </button>
+      </div>
+    </ng-template>
+  </main>
+
+  <!-- ==================================================== -->
+  <!-- MODAL: GESTIÓN DE CURSOS / MATERIAS                  -->
+  <!-- ==================================================== -->
+  <div *ngIf="modalGestionCursosOpen" class="modal fade show d-block modal-backdrop-custom" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable px-2" style="max-width: 540px;">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header border-bottom py-3 px-3 px-md-4">
+          <h6 class="modal-title fw-bold text-dark mb-0">Cursos & Materias</h6>
+          <button type="button" class="btn-close" (click)="modalGestionCursosOpen = false"></button>
+        </div>
+
+        <div class="modal-body p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted small"><strong>{{ cursos.length }}</strong> cursos activos</span>
+            <button (click)="openAddCursoModal()" class="btn btn-senati-subtle btn-sm">
+              <i class="bi bi-plus-lg me-1"></i> Nuevo Curso
+            </button>
+          </div>
+
+          <!-- Lista de Cursos -->
+          <div *ngIf="cursos.length > 0; else noCursosModalTemplate" class="d-flex flex-column gap-2">
+            <div *ngFor="let c of cursos" class="course-list-item p-3 rounded-3 d-flex justify-content-between align-items-center gap-2">
+              <div class="d-flex align-items-center gap-2 min-w-0">
+                <div class="subtle-dot-lg" [style.background-color]="c.color || '#0284c7'"></div>
+                <div class="text-truncate">
+                  <div class="fw-semibold text-dark small text-truncate">{{ c.nombre }}</div>
+                  <div class="text-muted text-truncate" style="font-size: 0.72rem;">
+                    <span *ngIf="c.profesor">{{ c.profesor }} &bull; </span>
+                    <span>{{ getTareasCountByCurso(c.id) }} tarea(s)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                <a *ngIf="c.link_blackboard" [href]="c.link_blackboard" target="_blank" class="task-action-btn text-muted" title="Blackboard">
+                  <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+                <button (click)="openEditCursoModal(c)" class="task-action-btn text-muted" title="Editar">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button (click)="deleteCurso(c)" class="task-action-btn text-muted hover-danger" title="Eliminar">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #noCursosModalTemplate>
+            <div class="text-center py-4 text-muted small">
+              No tienes ningún curso registrado.
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="modal-footer border-top py-2 px-3 px-md-4">
+          <button type="button" class="btn btn-ghost btn-sm" (click)="modalGestionCursosOpen = false">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- MODAL: AGREGAR / EDITAR TAREA                        -->
+  <!-- ==================================================== -->
+  <div *ngIf="modalTareaOpen" class="modal fade show d-block modal-backdrop-custom" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered px-2" style="max-width: 500px;">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header border-bottom py-3 px-3 px-md-4">
+          <h6 class="modal-title fw-bold text-dark mb-0">
+            {{ editingTareaId ? 'Editar Tarea' : 'Nueva Tarea' }}
+          </h6>
+          <button type="button" class="btn-close" (click)="modalTareaOpen = false"></button>
+        </div>
+        <div class="modal-body p-3 p-md-4">
+          <div *ngIf="errorTarea" class="alert alert-danger py-2 small mb-3">
+            {{ errorTarea }}
+          </div>
+
+          <form (ngSubmit)="saveTarea()">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-muted mb-1">Título *</label>
+              <input type="text" class="form-control form-control-clean" [(ngModel)]="formTarea.titulo" name="titulo" placeholder="Ej. Entregable 01 - Algoritmos" required autofocus>
+            </div>
+
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label small fw-semibold text-muted mb-0">Curso / Materia *</label>
+                <button type="button" (click)="openAddCursoModal()" class="btn btn-link text-primary btn-sm p-0 text-decoration-none" style="font-size: 0.75rem;">
+                  + Crear curso
+                </button>
+              </div>
+              <select class="form-select form-control-clean" [(ngModel)]="formTarea.curso_id" name="curso_id" required>
+                <option value="" disabled>Seleccionar curso...</option>
+                <option *ngFor="let c of cursos" [value]="c.id">{{ c.nombre }}</option>
+              </select>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-12 col-sm-7">
+                <label class="form-label small fw-semibold text-muted mb-1">Fecha Límite *</label>
+                <input type="datetime-local" class="form-control form-control-clean" [(ngModel)]="formTarea.fecha_limite" name="fecha_limite" required>
+              </div>
+              <div class="col-12 col-sm-5">
+                <label class="form-label small fw-semibold text-muted mb-1">Prioridad</label>
+                <select class="form-select form-control-clean" [(ngModel)]="formTarea.prioridad" name="prioridad">
+                  <option value="alta">Alta</option>
+                  <option value="media">Media</option>
+                  <option value="baja">Baja</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-muted mb-1">Descripción (Opcional)</label>
+              <textarea class="form-control form-control-clean" rows="2" [(ngModel)]="formTarea.descripcion" name="descripcion" placeholder="Detalles de entrega..."></textarea>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label small fw-semibold text-muted mb-1">Link de Entrega (Opcional)</label>
+              <input type="url" class="form-control form-control-clean" [(ngModel)]="formTarea.link_entrega" name="link_entrega" placeholder="https://senati.blackboard.com/...">
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-ghost btn-sm" (click)="modalTareaOpen = false">Cancelar</button>
+              <button type="submit" class="btn btn-senati-subtle btn-sm px-3">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- MODAL: CREAR / EDITAR MATERIA O CURSO                -->
+  <!-- ==================================================== -->
+  <div *ngIf="modalCursoOpen" class="modal fade show d-block modal-backdrop-custom" tabindex="-1" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered px-2" style="max-width: 440px;">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header border-bottom py-3 px-3 px-md-4">
+          <h6 class="modal-title fw-bold text-dark mb-0">
+            {{ editingCursoId ? 'Editar Curso' : 'Nuevo Curso' }}
+          </h6>
+          <button type="button" class="btn-close" (click)="modalCursoOpen = false"></button>
+        </div>
+        <div class="modal-body p-3 p-md-4">
+          <div *ngIf="errorCurso" class="alert alert-danger py-2 small mb-3">
+            {{ errorCurso }}
+          </div>
+
+          <form (ngSubmit)="saveCurso()">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-muted mb-1">Nombre del Curso *</label>
+              <input type="text" class="form-control form-control-clean" [(ngModel)]="formCurso.nombre" name="nombre" placeholder="Ej. Desarrollo Web" required autofocus>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-12 col-sm-6">
+                <label class="form-label small fw-semibold text-muted mb-1">Docente (Opcional)</label>
+                <input type="text" class="form-control form-control-clean" [(ngModel)]="formCurso.profesor" name="profesor" placeholder="Ej. Ing. Pérez">
+              </div>
+              <div class="col-12 col-sm-6">
+                <label class="form-label small fw-semibold text-muted mb-1">Horario (Opcional)</label>
+                <input type="text" class="form-control form-control-clean" [(ngModel)]="formCurso.horario" name="horario" placeholder="Ej. Lun 08:00">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-muted mb-1">Link Blackboard (Opcional)</label>
+              <input type="url" class="form-control form-control-clean" [(ngModel)]="formCurso.link_blackboard" name="link_blackboard" placeholder="https://senati.blackboard.com/...">
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label small fw-semibold text-muted mb-1">Color Identificador</label>
+              <div class="d-flex gap-2 align-items-center pt-1 flex-wrap">
+                <div 
+                  *ngFor="let col of coloresCurso" 
+                  (click)="formCurso.color = col" 
+                  class="color-picker-box" 
+                  [style.background-color]="col"
+                  [class.active-color]="formCurso.color === col">
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-ghost btn-sm" (click)="modalCursoOpen = false">Cancelar</button>
+              <button type="submit" class="btn btn-senati-subtle btn-sm px-3">
+                {{ editingCursoId ? 'Actualizar' : 'Guardar' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- FLOATING TOAST NOTIFICATION                          -->
+  <!-- ==================================================== -->
+  <div *ngIf="toast.show" class="toast-floating-container">
+    <div class="custom-toast d-flex align-items-center shadow" [ngClass]="'toast-' + toast.type">
+      <div class="toast-icon-circle me-2">
+        <i *ngIf="toast.type === 'success'" class="bi bi-check-lg"></i>
+        <i *ngIf="toast.type === 'info'" class="bi bi-info-lg"></i>
+        <i *ngIf="toast.type === 'danger'" class="bi bi-exclamation-lg"></i>
+      </div>
+      <div class="toast-message flex-grow-1 small pe-2 fw-medium">
+        {{ toast.message }}
+      </div>
+      <button type="button" class="btn-close btn-close-toast ms-2" (click)="closeToast()"></button>
+    </div>
+  </div>
+</div>

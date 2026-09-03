@@ -1,0 +1,245 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --senati-blue: #003b7a;
+  --senati-dark: #002550;
+  --senati-accent: #0284c7;
+  --senati-light-bg: #f8fafc;
+  --senati-card-bg: #ffffff;
+  --senati-border: #e2e8f0;
+  --senati-text-main: #1e293b;
+  --senati-text-muted: #64748b;
+  --senati-navbar-bg: #ffffff;
+  --senati-input-bg: #ffffff;
+  --senati-pill-hover: #e2e8f0;
+  --senati-pill-active: #1e293b;
+  --senati-pill-active-text: #ffffff;
+}
+
+body.dark-theme {
+  --senati-blue: #0284c7;
+  --senati-dark: #0369a1;
+  --senati-accent: #38bdf8;
+  --senati-light-bg: #0b1120;
+  --senati-card-bg: #1e293b;
+  --senati-border: #334155;
+  --senati-text-main: #f8fafc;
+  --senati-text-muted: #94a3b8;
+  --senati-navbar-bg: #1e293b;
+  --senati-input-bg: #0f172a;
+  --senati-pill-hover: #334155;
+  --senati-pill-active: #38bdf8;
+  --senati-pill-active-text: #0f172a;
+}
+
+html, body {
+  background-color: var(--senati-light-bg) !important;
+  color: var(--senati-text-main) !important;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* =================================================== */
+/* UNIVERSAL DARK THEME OVERRIDES                      */
+/* =================================================== */
+body.dark-theme,
+body.dark-theme .dashboard-wrapper,
+body.dark-theme main {
+  background-color: var(--senati-light-bg) !important;
+  color: var(--senati-text-main) !important;
+}
+
+body.dark-theme header.navbar,
+body.dark-theme .bg-white {
+  background-color: var(--senati-navbar-bg) !important;
+  color: var(--senati-text-main) !important;
+  border-color: var(--senati-border) !important;
+}
+
+body.dark-theme .card,
+body.dark-theme .task-row-card {
+  background-color: var(--senati-card-bg) !important;
+  border-color: var(--senati-border) !important;
+  color: var(--senati-text-main) !important;
+}
+
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4,
+body.dark-theme h5,
+body.dark-theme h6,
+body.dark-theme .text-dark,
+body.dark-theme .task-title {
+  color: #f8fafc !important;
+}
+
+body.dark-theme .text-muted,
+body.dark-theme .task-desc {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .text-secondary {
+  color: #cbd5e1 !important;
+}
+
+body.dark-theme .border,
+body.dark-theme .border-bottom,
+body.dark-theme .border-top,
+body.dark-theme .border-start,
+body.dark-theme .border-end {
+  border-color: #334155 !important;
+}
+
+body.dark-theme .bg-light {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .form-control,
+body.dark-theme .form-select {
+  background-color: var(--senati-input-bg) !important;
+  border-color: var(--senati-border) !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .form-control:focus,
+body.dark-theme .form-select:focus {
+  background-color: var(--senati-input-bg) !important;
+  border-color: #38bdf8 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .form-control::placeholder {
+  color: #64748b;
+}
+
+body.dark-theme .btn-light {
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .btn-light:hover {
+  background-color: #475569 !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .btn-outline-secondary {
+  border-color: #475569 !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-theme .btn-outline-secondary:hover {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .modal-content {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .modal-header,
+body.dark-theme .modal-footer {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+body.dark-theme .task-completed {
+  background-color: #141e33 !important;
+  opacity: 0.55;
+}
+
+body.dark-theme .badge-priority-alta {
+  background-color: rgba(239, 68, 68, 0.25) !important;
+  color: #fca5a5 !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+body.dark-theme .badge-priority-media {
+  background-color: rgba(245, 158, 11, 0.25) !important;
+  color: #fde68a !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+}
+
+body.dark-theme .badge-priority-baja {
+  background-color: rgba(14, 165, 233, 0.25) !important;
+  color: #7dd3fc !important;
+  border-color: rgba(14, 165, 233, 0.4) !important;
+}
+
+body.dark-theme .badge-status-en_progreso {
+  background-color: rgba(59, 130, 246, 0.25) !important;
+  color: #93c5fd !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+/* Custom Base Utilities */
+.bg-senati {
+  background-color: var(--senati-blue) !important;
+  color: #fff;
+}
+
+.text-senati {
+  color: var(--senati-blue) !important;
+}
+
+body.dark-theme .text-senati {
+  color: #38bdf8 !important;
+}
+
+.btn-senati {
+  background-color: #003b7a;
+  color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  transition: all 0.2s ease;
+}
+
+body.dark-theme .btn-senati {
+  background-color: #0284c7;
+  color: white;
+}
+
+.btn-senati:hover {
+  filter: brightness(1.1);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.badge-priority-alta {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.badge-priority-media {
+  background-color: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.badge-priority-baja {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.badge-status-en_progreso {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #dbeafe;
+}

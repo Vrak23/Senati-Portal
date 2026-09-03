@@ -1,0 +1,88 @@
+<div class="login-page d-flex align-items-center justify-content-center py-5">
+  <div class="container" style="max-width: 480px;">
+    <!-- Logo / Brand Header -->
+    <div class="text-center mb-4">
+      <div class="senati-badge d-inline-flex align-items-center justify-content-center mb-3">
+        <i class="bi bi-mortarboard-fill text-white fs-3"></i>
+      </div>
+      <h2 class="fw-bold text-senati mb-1">Portal Académico SENATI</h2>
+      <p class="text-muted small">Ecosistema Central &bull; 4° Semestre</p>
+    </div>
+
+    <!-- Card -->
+    <div class="card shadow-sm p-4 border-0">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0 text-dark">
+          {{ isRegisterMode ? 'Crear Cuenta Académica' : 'Iniciar Sesión' }}
+        </h5>
+        <span class="badge bg-light text-primary border">
+          {{ isRegisterMode ? 'Registro' : 'Acceso' }}
+        </span>
+      </div>
+
+      <!-- Alertas -->
+      <div *ngIf="errorMessage" class="alert alert-danger py-2 small d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2 fs-6"></i>
+        <div>{{ errorMessage }}</div>
+      </div>
+
+      <div *ngIf="successMessage" class="alert alert-success py-2 small d-flex align-items-center" role="alert">
+        <i class="bi bi-check-circle-fill me-2 fs-6"></i>
+        <div>{{ successMessage }}</div>
+      </div>
+
+      <!-- Formulario -->
+      <form (ngSubmit)="onSubmit()">
+        <div *ngIf="isRegisterMode" class="row g-2 mb-3">
+          <div class="col-6">
+            <label class="form-label small fw-semibold text-secondary">Nombres *</label>
+            <input type="text" class="form-control" [(ngModel)]="nombres" name="nombres" placeholder="Ej. Rodrigo" required>
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold text-secondary">Apellidos</label>
+            <input type="text" class="form-control" [(ngModel)]="apellidos" name="apellidos" placeholder="Ej. Llanos">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary">Correo Institucional / Personal *</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-envelope"></i></span>
+            <input type="email" class="form-control border-start-0" [(ngModel)]="email" name="email" placeholder="usuario@senati.pe" required>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-semibold text-secondary">Contraseña *</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-lock"></i></span>
+            <input type="password" class="form-control border-start-0" [(ngModel)]="password" name="password" placeholder="••••••••" required>
+          </div>
+          <div *ngIf="isRegisterMode" class="form-text text-muted small">Mínimo 6 caracteres.</div>
+        </div>
+
+        <button type="submit" class="btn btn-senati w-100 py-2 d-flex align-items-center justify-content-center" [disabled]="isLoading">
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+          <span>{{ isRegisterMode ? 'Registrarme' : 'Entrar al Portal' }}</span>
+        </button>
+      </form>
+
+      <!-- Toggle mode -->
+      <div class="text-center mt-4 pt-2 border-top">
+        <p class="small text-muted mb-0">
+          {{ isRegisterMode ? '¿Ya tienes una cuenta?' : '¿No tienes cuenta aún?' }}
+          <a href="javascript:void(0)" (click)="toggleMode()" class="text-decoration-none fw-bold text-senati ms-1">
+            {{ isRegisterMode ? 'Inicia sesión aquí' : 'Regístrate' }}
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Enlace Volver a Central Hub -->
+    <div class="text-center mt-3">
+      <a href="https://central-de-estudio.vercel.app/" class="small text-muted text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i> Ir al Central Hub Principal
+      </a>
+    </div>
+  </div>
+</div>
