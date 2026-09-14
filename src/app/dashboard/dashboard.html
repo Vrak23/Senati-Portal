@@ -59,9 +59,11 @@
       <div class="d-flex d-md-none align-items-center gap-1">
         <!-- Hamburger Toggle -->
         <button 
+          type="button"
           (click)="mobileMenuOpen = !mobileMenuOpen" 
           class="btn btn-ghost-icon btn-sm" 
-          aria-label="Abrir menú">
+          aria-label="Abrir menú"
+          style="min-width: 38px; min-height: 38px;">
           <i class="bi fs-5" [ngClass]="mobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
         </button>
       </div>
@@ -84,7 +86,11 @@
       <!-- Clean Menu Links List -->
       <div class="d-flex flex-column gap-1">
         <!-- Navegación de Secciones en Móvil -->
-        <button (click)="activeTab = 'tareas'; mobileMenuOpen = false" class="mobile-menu-link" [class.active-mobile-link]="activeTab === 'tareas'">
+        <button 
+          type="button" 
+          (click)="selectTabMobile('tareas')" 
+          class="mobile-menu-link" 
+          [class.active-mobile-link]="activeTab === 'tareas'">
           <div class="mobile-menu-icon-box text-primary">
             <i class="bi bi-check2-square"></i>
           </div>
@@ -92,7 +98,11 @@
           <span class="badge bg-primary-subtle text-primary small">{{ tareasPendientes }}</span>
         </button>
 
-        <button (click)="activeTab = 'horarios'; mobileMenuOpen = false" class="mobile-menu-link" [class.active-mobile-link]="activeTab === 'horarios'">
+        <button 
+          type="button" 
+          (click)="selectTabMobile('horarios')" 
+          class="mobile-menu-link" 
+          [class.active-mobile-link]="activeTab === 'horarios'">
           <div class="mobile-menu-icon-box text-info">
             <i class="bi bi-calendar3"></i>
           </div>
@@ -100,14 +110,22 @@
           <span *ngIf="claseEnVivo" class="badge bg-danger text-white small">LIVE</span>
         </button>
 
-        <button (click)="activeTab = 'proyectos'; mobileMenuOpen = false" class="mobile-menu-link" [class.active-mobile-link]="activeTab === 'proyectos'">
+        <button 
+          type="button" 
+          (click)="selectTabMobile('proyectos')" 
+          class="mobile-menu-link" 
+          [class.active-mobile-link]="activeTab === 'proyectos'">
           <div class="mobile-menu-icon-box text-success">
             <i class="bi bi-folder2-open"></i>
           </div>
           <span class="flex-grow-1 text-start">🚀 Entregables & Proyectos</span>
         </button>
 
-        <button (click)="activeTab = 'calculadora'; mobileMenuOpen = false" class="mobile-menu-link" [class.active-mobile-link]="activeTab === 'calculadora'">
+        <button 
+          type="button" 
+          (click)="selectTabMobile('calculadora')" 
+          class="mobile-menu-link" 
+          [class.active-mobile-link]="activeTab === 'calculadora'">
           <div class="mobile-menu-icon-box text-warning">
             <i class="bi bi-calculator"></i>
           </div>
@@ -116,7 +134,10 @@
 
         <div class="hr my-1 opacity-25 border-top"></div>
 
-        <button (click)="openGestionCursosModal(); mobileMenuOpen = false" class="mobile-menu-link">
+        <button 
+          type="button" 
+          (click)="openGestionCursosMobile()" 
+          class="mobile-menu-link">
           <div class="mobile-menu-icon-box text-primary">
             <i class="bi bi-journal-bookmark"></i>
           </div>
@@ -124,25 +145,32 @@
           <span class="badge bg-secondary-subtle text-secondary small">{{ cursos.length }}</span>
         </button>
 
-        <a href="https://senati.blackboard.com/" target="_blank" (click)="mobileMenuOpen = false" class="mobile-menu-link text-decoration-none">
+        <button 
+          type="button" 
+          (click)="openExternalLink('https://senati.blackboard.com/', true)" 
+          class="mobile-menu-link text-decoration-none">
           <div class="mobile-menu-icon-box text-dark">
             <i class="bi bi-window-sidebar"></i>
           </div>
           <span class="flex-grow-1 text-start text-dark">Blackboard</span>
           <i class="bi bi-box-arrow-up-right text-muted small"></i>
-        </a>
+        </button>
 
-        <a href="https://central-de-estudio.vercel.app/" (click)="mobileMenuOpen = false" class="mobile-menu-link text-decoration-none">
+        <button 
+          type="button" 
+          (click)="openExternalLink('https://central-de-estudio.vercel.app/', true)" 
+          class="mobile-menu-link text-decoration-none">
           <div class="mobile-menu-icon-box text-primary">
             <i class="bi bi-grid"></i>
           </div>
           <span class="flex-grow-1 text-start text-dark">Central Hub</span>
           <i class="bi bi-chevron-right text-muted small"></i>
-        </a>
+        </button>
 
         <button 
+          type="button"
           *ngIf="notificationService.isSupported && notificationService.permission !== 'granted'" 
-          (click)="enableNotifications(); mobileMenuOpen = false" 
+          (click)="enableNotificationsMobile()" 
           class="mobile-menu-link text-warning">
           <div class="mobile-menu-icon-box text-warning">
             <i class="bi bi-bell"></i>
@@ -153,7 +181,10 @@
 
       <!-- Logout Divider & Button -->
       <div class="pt-2 mt-2 border-top">
-        <button (click)="onLogout()" class="mobile-menu-link text-danger w-100">
+        <button 
+          type="button" 
+          (click)="onLogoutMobile()" 
+          class="mobile-menu-link text-danger w-100">
           <div class="mobile-menu-icon-box text-danger">
             <i class="bi bi-box-arrow-right"></i>
           </div>
@@ -847,7 +878,7 @@
   <!-- ==================================================== -->
   <!-- MODAL: GESTIÓN DE CURSOS / MATERIAS                  -->
   <!-- ==================================================== -->
-  <div *ngIf="modalGestionCursosOpen" class="modal fade show d-block modal-backdrop-custom" tabindex="-1">
+  <div *ngIf="modalGestionCursosOpen" class="modal fade show d-block modal-backdrop-custom" tabindex="-1" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable px-2" style="max-width: 540px;">
       <div class="modal-content border-0 shadow-lg">
         <div class="modal-header border-bottom py-3 px-3 px-md-4">
@@ -908,7 +939,7 @@
   <!-- ==================================================== -->
   <!-- MODAL: AGREGAR / EDITAR TAREA                        -->
   <!-- ==================================================== -->
-  <div *ngIf="modalTareaOpen" class="modal fade show d-block modal-backdrop-custom" tabindex="-1">
+  <div *ngIf="modalTareaOpen" class="modal fade show d-block modal-backdrop-custom" tabindex="-1" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered px-2" style="max-width: 500px;">
       <div class="modal-content border-0 shadow-lg">
         <div class="modal-header border-bottom py-3 px-3 px-md-4">

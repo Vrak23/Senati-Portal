@@ -1279,9 +1279,45 @@ export class Dashboard implements OnInit, OnDestroy {
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('[SENATI] ' + titulo)}&details=${encodeURIComponent(fullDesc)}&dates=${startStr}/${endStr}`;
   }
 
+  // --- MOBILE DRAWER ACTIONS ---
+  selectTabMobile(tab: 'tareas' | 'horarios' | 'proyectos' | 'calculadora') {
+    this.activeTab = tab;
+    this.mobileMenuOpen = false;
+    this.cdr.detectChanges();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  openGestionCursosMobile() {
+    this.mobileMenuOpen = false;
+    this.openGestionCursosModal();
+    this.cdr.detectChanges();
+  }
+
+  openExternalLink(url: string, newTab: boolean = true) {
+    this.mobileMenuOpen = false;
+    this.cdr.detectChanges();
+    if (newTab) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      window.location.href = url;
+    }
+  }
+
+  async enableNotificationsMobile() {
+    this.mobileMenuOpen = false;
+    this.cdr.detectChanges();
+    await this.enableNotifications();
+  }
+
+  async onLogoutMobile() {
+    this.mobileMenuOpen = false;
+    this.cdr.detectChanges();
+    await this.onLogout();
+  }
+
   async onLogout() {
+    this.mobileMenuOpen = false;
     await this.supabaseService.signOut();
     this.router.navigate(['/login']);
   }
-
 }

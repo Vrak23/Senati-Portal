@@ -503,27 +503,29 @@ body.dark-theme .task-row-card:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  z-index: 1040;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1045;
   animation: fadeInBackdrop 0.15s ease forwards;
 }
 
 .mobile-nav-panel {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 16px;
-  left: auto;
-  width: 270px;
-  max-width: calc(100vw - 32px);
+  position: fixed;
+  top: 56px;
+  right: 12px;
+  left: 12px;
+  width: auto;
+  max-width: 360px;
+  margin-left: auto;
   background-color: var(--senati-navbar-bg);
   border: 1px solid var(--senati-border) !important;
   border-radius: 16px;
   z-index: 1050;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3) !important;
-  max-height: 80vh;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4) !important;
+  max-height: calc(100vh - 72px);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   animation: scaleFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -571,8 +573,8 @@ body.dark-theme .task-row-card:hover {
 .mobile-menu-link {
   background: transparent;
   border: none;
-  padding: 0.55rem 0.75rem;
-  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -581,11 +583,22 @@ body.dark-theme .task-row-card:hover {
   color: var(--senati-text-main);
   transition: all 0.15s ease;
   width: 100%;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  text-decoration: none;
 }
 
-.mobile-menu-link:hover, .mobile-menu-link:active {
+.mobile-menu-link:hover, 
+.mobile-menu-link:active,
+.mobile-menu-link:focus {
   background-color: var(--senati-pill-hover);
   color: var(--senati-text-main);
+}
+
+.mobile-menu-link > * {
+  pointer-events: none;
 }
 
 .mobile-menu-icon-box {
