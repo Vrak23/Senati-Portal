@@ -5,12 +5,25 @@
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.senati-logo-badge {
-  width: 28px;
-  height: 28px;
-  background-color: var(--senati-blue);
-  border-radius: 7px;
+.senati-logo-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  overflow: hidden;
+  border: 1.5px solid rgba(56, 189, 248, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  background-color: #0b1120;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+}
+
+.senati-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 34%;
 }
 
 .leading-none {
@@ -83,6 +96,21 @@ body.dark-theme .btn-senati-subtle {
 .hover-danger:hover {
   color: #ef4444 !important;
   background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* =================================================== */
+/* RESPONSIVE SUBNAV & PILLS SCROLL                    */
+/* =================================================== */
+.subnav-pills-scroll {
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 2px 0;
+}
+
+.subnav-pills-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 /* =================================================== */
@@ -409,11 +437,23 @@ body.dark-theme .task-row-card:hover {
     padding-right: 12px;
   }
 
+  .subnav-sections-bar {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .subnav-sections-bar .btn {
+    font-size: 0.78rem !important;
+    padding-left: 0.6rem !important;
+    padding-right: 0.6rem !important;
+  }
+
   .task-row-card {
     padding: 12px !important;
   }
 
   .task-actions-row {
+    width: 100% !important;
     border-top: 1px solid var(--senati-border);
     margin-top: 8px;
     padding-top: 8px;
@@ -429,6 +469,13 @@ body.dark-theme .task-row-card:hover {
     margin-bottom: 2px;
   }
 
+  .task-action-btn {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0.35rem;
+    font-size: 0.95rem;
+  }
+
   .toast-floating-container {
     left: 16px;
     right: 16px;
@@ -438,6 +485,15 @@ body.dark-theme .task-row-card:hover {
 
   .custom-toast {
     width: 100%;
+  }
+}
+
+@media (min-width: 576px) {
+  .task-actions-row {
+    width: auto !important;
+    border-top: none !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
   }
 }
 

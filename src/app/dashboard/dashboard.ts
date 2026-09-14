@@ -147,8 +147,8 @@ export class Dashboard implements OnInit, OnDestroy {
     }
   }
 
-  // Tema Oscuro
-  isDarkMode = false;
+  // Tema Oscuro Predeterminado
+  isDarkMode = true;
 
   constructor(
     private supabaseService: SupabaseService,
@@ -174,29 +174,18 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   loadTheme() {
-    const savedTheme = localStorage.getItem('senati_theme');
-    if (savedTheme === 'dark') {
-      this.isDarkMode = true;
-      document.documentElement.classList.add('dark-theme');
-      document.body.classList.add('dark-theme');
-    } else {
-      this.isDarkMode = false;
-      document.documentElement.classList.remove('dark-theme');
-      document.body.classList.remove('dark-theme');
-    }
+    this.isDarkMode = true;
+    document.documentElement.classList.add('dark-theme');
+    document.body.classList.add('dark-theme');
+    localStorage.setItem('senati_theme', 'dark');
   }
 
   toggleTheme() {
-    this.isDarkMode = !this.isDarkMode;
-    if (this.isDarkMode) {
-      document.documentElement.classList.add('dark-theme');
-      document.body.classList.add('dark-theme');
-      localStorage.setItem('senati_theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark-theme');
-      document.body.classList.remove('dark-theme');
-      localStorage.setItem('senati_theme', 'light');
-    }
+    // Modo oscuro predeterminado permanente
+    this.isDarkMode = true;
+    document.documentElement.classList.add('dark-theme');
+    document.body.classList.add('dark-theme');
+    localStorage.setItem('senati_theme', 'dark');
     this.cdr.detectChanges();
   }
 

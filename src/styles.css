@@ -3,19 +3,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --senati-blue: #003b7a;
-  --senati-dark: #002550;
-  --senati-accent: #0284c7;
-  --senati-light-bg: #f8fafc;
-  --senati-card-bg: #ffffff;
-  --senati-border: #e2e8f0;
-  --senati-text-main: #1e293b;
-  --senati-text-muted: #64748b;
-  --senati-navbar-bg: #ffffff;
-  --senati-input-bg: #ffffff;
-  --senati-pill-hover: #e2e8f0;
-  --senati-pill-active: #1e293b;
-  --senati-pill-active-text: #ffffff;
+  --senati-blue: #0284c7;
+  --senati-dark: #0369a1;
+  --senati-accent: #38bdf8;
+  --senati-light-bg: #0b1120;
+  --senati-card-bg: #1e293b;
+  --senati-border: #334155;
+  --senati-text-main: #f8fafc;
+  --senati-text-muted: #94a3b8;
+  --senati-navbar-bg: #1e293b;
+  --senati-input-bg: #0f172a;
+  --senati-pill-hover: #334155;
+  --senati-pill-active: #38bdf8;
+  --senati-pill-active-text: #0f172a;
 }
 
 body.dark-theme {

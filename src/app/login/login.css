@@ -1,12 +1,48 @@
 .login-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+  background: radial-gradient(circle at 50% 18%, #1e293b 0%, #0b1120 100%);
+  padding: 1.5rem 1rem;
 }
 
-.senati-badge {
-  width: 60px;
-  height: 60px;
-  background-color: var(--senati-blue);
+.senati-login-logo-wrapper {
+  width: 76px;
+  height: 76px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  background-color: #0b1120;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.senati-login-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 34%;
+}
+
+.login-card {
+  background-color: var(--senati-card-bg, #1e293b);
+  border: 1px solid var(--senati-border, #334155);
   border-radius: 16px;
-  box-shadow: 0 8px 16px rgba(0, 59, 122, 0.25);
+}
+
+@media (max-width: 575.98px) {
+  .login-page {
+    padding: 1rem 0.75rem;
+  }
+  
+  .senati-login-logo-wrapper {
+    width: 68px;
+    height: 68px;
+    border-radius: 16px;
+  }
+  
+  .login-card {
+    padding: 1.25rem !important;
+    border-radius: 14px;
+  }
 }
