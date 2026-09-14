@@ -48,3 +48,56 @@ export interface CalculoCurso {
   notaFinalNecesariaNotable: number | null; // Para sacar 14+
   estado: 'aprobado' | 'en_carrera' | 'en_riesgo' | 'desaprobado';
 }
+
+export type TipoEntregable = 'TR1' | 'TR2' | 'Proyecto_Final' | 'Laboratorio' | 'Otro';
+export type EstadoEntregable = 'planificacion' | 'en_desarrollo' | 'listo_entrega' | 'entregado';
+
+export interface ChecklistItem {
+  id: string;
+  texto: string;
+  completado: boolean;
+}
+
+export interface ProyectoEntregable {
+  id?: string;
+  usuario_id?: string;
+  curso_id: string;
+  titulo: string;
+  tipo: TipoEntregable;
+  descripcion?: string;
+  fecha_limite: string;
+  estado: EstadoEntregable;
+  link_github?: string;
+  link_drive?: string;
+  link_demo?: string;
+  checklist?: ChecklistItem[];
+  created_at?: string;
+  curso?: Curso;
+}
+
+export interface ClaseHorario {
+  id: string;
+  curso: Curso;
+  diaNombre: string; // 'Lunes', 'Martes', etc.
+  diaAbrev: string; // 'LUN', 'MAR', etc.
+  diaNumero: number; // 0: Domingo, 1: Lunes, 2: Martes, 3: Miércoles, 4: Jueves, 5: Viernes, 6: Sábado
+  horaInicio: string; // '12:45'
+  horaFin: string; // '17:30'
+  horaFormateada: string; // '12:45 - 17:30'
+  inicioMinutos: number;
+  finMinutos: number;
+  duracionMinutos: number;
+  esHoy: boolean;
+  enVivo: boolean;
+  proximaHoy: boolean;
+  finalizadaHoy: boolean;
+}
+
+export interface DiaSemanaHorario {
+  nombre: string;
+  abreviacion: string;
+  numero: number;
+  esHoy: boolean;
+  clases: ClaseHorario[];
+}
+

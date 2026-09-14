@@ -243,3 +243,46 @@ body.dark-theme .btn-senati {
   color: #1d4ed8;
   border: 1px solid #dbeafe;
 }
+
+/* =================================================== */
+/* UNIVERSAL TABLE & EVALUACIONES DARK THEME           */
+/* =================================================== */
+body.dark-theme table,
+body.dark-theme .table {
+  --bs-table-bg: var(--senati-card-bg) !important;
+  --bs-table-color: var(--senati-text-main) !important;
+  background-color: var(--senati-card-bg) !important;
+  color: var(--senati-text-main) !important;
+  border-color: var(--senati-border) !important;
+}
+
+body.dark-theme .table > :not(caption) > * > * {
+  background-color: var(--senati-card-bg) !important;
+  color: var(--senati-text-main) !important;
+  border-color: var(--senati-border) !important;
+}
+
+body.dark-theme .table-light,
+body.dark-theme .table-light th,
+body.dark-theme .table-light td {
+  --bs-table-bg: #0f172a !important;
+  --bs-table-color: #94a3b8 !important;
+  background-color: #0f172a !important;
+  color: #94a3b8 !important;
+  border-color: var(--senati-border) !important;
+}
+
+body.dark-theme .table tbody tr:hover td {
+  background-color: #253349 !important;
+}
+
+body.dark-theme .card-header {
+  background-color: var(--senati-card-bg) !important;
+  color: var(--senati-text-main) !important;
+  border-color: var(--senati-border) !important;
+}
+
+body.dark-theme .subnav-sections-bar {
+  background-color: var(--senati-navbar-bg) !important;
+  border-color: var(--senati-border) !important;
+}

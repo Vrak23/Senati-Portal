@@ -557,3 +557,144 @@ body.dark-theme .task-row-card:hover {
   font-size: 0.8rem;
   flex-shrink: 0;
 }
+
+/* =================================================== */
+/* HORARIO DE CLASES & SECCIÓN SEMANAL                 */
+/* =================================================== */
+.hero-clase-live {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(220, 38, 38, 0.02) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
+  border-left: 5px solid #ef4444 !important;
+  animation: liveCardGlow 3s infinite ease-in-out;
+}
+
+@keyframes liveCardGlow {
+  0%, 100% { box-shadow: 0 4px 14px rgba(239, 68, 68, 0.08); }
+  50% { box-shadow: 0 6px 20px rgba(239, 68, 68, 0.18); }
+}
+
+.hero-proxima-clase {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(217, 119, 6, 0.02) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
+  border-left: 5px solid #d97706 !important;
+}
+
+.clase-live-badge-icon, .clase-proxima-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.dia-horario-card {
+  background-color: var(--senati-card-bg);
+  border: 1px solid var(--senati-border) !important;
+  border-radius: 12px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dia-horario-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06) !important;
+}
+
+.dia-horario-card.dia-es-hoy {
+  border: 2px solid var(--senati-blue) !important;
+  box-shadow: 0 4px 16px rgba(0, 59, 122, 0.08) !important;
+}
+
+body.dark-theme .dia-horario-card.dia-es-hoy {
+  border-color: #38bdf8 !important;
+}
+
+.dia-dot-badge {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.clase-card-item {
+  background-color: var(--senati-light-bg);
+  border-color: var(--senati-border) !important;
+  transition: all 0.2s ease;
+}
+
+.clase-card-item:hover {
+  background-color: var(--senati-card-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.clase-item-live {
+  background-color: rgba(239, 68, 68, 0.05) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.clase-item-past {
+  opacity: 0.72;
+}
+
+.clase-item-past:hover {
+  opacity: 0.95;
+}
+
+.active-mobile-link {
+  background-color: var(--senati-pill-hover) !important;
+  font-weight: 600;
+}
+
+/* =================================================== */
+/* TABLA DE EVALUACIONES & CALCULADORA STYLES          */
+/* =================================================== */
+.senati-eval-table {
+  --bs-table-bg: transparent !important;
+  color: var(--senati-text-main) !important;
+}
+
+.senati-eval-table > :not(caption) > * > * {
+  background-color: var(--senati-card-bg) !important;
+  color: var(--senati-text-main) !important;
+  border-bottom-color: var(--senati-border) !important;
+}
+
+.eval-table-header th {
+  background-color: var(--senati-light-bg) !important;
+  color: var(--senati-text-muted) !important;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  border-bottom: 1px solid var(--senati-border) !important;
+}
+
+.eval-name {
+  color: var(--senati-text-main) !important;
+}
+
+.eval-weight-badge {
+  background-color: var(--senati-light-bg) !important;
+  color: var(--senati-text-main) !important;
+  border: 1px solid var(--senati-border) !important;
+}
+
+body.dark-theme .senati-eval-table td,
+body.dark-theme .senati-eval-table th {
+  background-color: var(--senati-card-bg) !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .eval-table-header th {
+  background-color: #0f172a !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .eval-name {
+  color: #f8fafc !important;
+}
+
+body.dark-theme .eval-weight-badge {
+  background-color: #0f172a !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+

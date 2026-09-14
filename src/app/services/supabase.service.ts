@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
-import { Curso, Tarea, Evaluacion, EstadoTarea } from '../models/senati.models';
+import { Curso, Tarea, Evaluacion, EstadoTarea, ProyectoEntregable } from '../models/senati.models';
 
 @Injectable({
   providedIn: 'root'
@@ -283,5 +283,162 @@ export class SupabaseService {
       .eq('id', id);
 
     if (error) throw error;
+  }
+
+  // --- PROYECTOS & ENTREGABLES CRUD ---
+  async getProyectos(cursoId?: string): Promise<ProyectoEntregable[]> {
+    const user = await this.getUser();
+    const localKey = 'senati_proyectos_' + (user ? user.id : 'anon');
+
+    try {
+      if (user) {
+        let query = this.supabase
+          .from('senati_proyectos')
+          .select(`
+            *,
+            curso:senati_cursos (
+              id,
+              nombre,
+              color,
+              semestre,
+              profesor
+            )
+          `)
+          .eq('usuario_id', user.id)
+          .order('fecha_limite', { ascending: true });
+
+        if (cursoId) {
+          query = query.eq('curso_id', cursoId);
+        }
+
+        const { data, error } = await query;
+        if (!error && data) {
+          localStorage.setItem(localKey, JSON.stringify(data));
+          return data;
+        }
+      }
+    } catch (e) {
+      console.warn('Fallback a cache local de proyectos:', e);
+    }
+
+    // Fallback a localStorage
+    const cached = localStorage.getItem(localKey);
+    let list: ProyectoEntregable[] = cached ? JSON.parse(cached) : [];
+    if (cursoId) {
+      list = list.filter(p => p.curso_id === cursoId);
+    }
+    return list;
+  }
+
+  async addProyecto(proyecto: Omit<ProyectoEntregable, 'id' | 'usuario_id' | 'created_at' | 'curso'>): Promise<ProyectoEntregable> {
+    const user = await this.getUser();
+    const localKey = 'senati_proyectos_' + (user ? user.id : 'anon');
+    const newId = 'proj_' + Date.now();
+    const nuevoObj: ProyectoEntregable = {
+      ...proyecto,
+      id: newId,
+      usuario_id: user?.id || 'anon',
+      created_at: new Date().toISOString()
+    };
+
+    try {
+      if (user) {
+        const { data, error } = await this.supabase
+          .from('senati_proyectos')
+          .insert([
+            {
+              ...proyecto,
+              usuario_id: user.id
+            }
+          ])
+          .select(`
+            *,
+            curso:senati_cursos (
+              id,
+              nombre,
+              color,
+              semestre,
+              profesor
+            )
+          `)
+          .single();
+
+        if (!error && data) {
+          return data;
+        }
+      }
+    } catch (e) {
+      console.warn('Guardando en almacenamiento local:', e);
+    }
+
+    const cached = localStorage.getItem(localKey);
+    const list: ProyectoEntregable[] = cached ? JSON.parse(cached) : [];
+    list.push(nuevoObj);
+    localStorage.setItem(localKey, JSON.stringify(list));
+    return nuevoObj;
+  }
+
+  async updateProyecto(id: string, proyecto: Partial<ProyectoEntregable>): Promise<ProyectoEntregable> {
+    const user = await this.getUser();
+    const localKey = 'senati_proyectos_' + (user ? user.id : 'anon');
+
+    try {
+      if (user) {
+        const { data, error } = await this.supabase
+          .from('senati_proyectos')
+          .update(proyecto)
+          .eq('id', id)
+          .select(`
+            *,
+            curso:senati_cursos (
+              id,
+              nombre,
+              color,
+              semestre,
+              profesor
+            )
+          `)
+          .single();
+
+        if (!error && data) {
+          return data;
+        }
+      }
+    } catch (e) {
+      console.warn('Actualizando en local:', e);
+    }
+
+    const cached = localStorage.getItem(localKey);
+    let list: ProyectoEntregable[] = cached ? JSON.parse(cached) : [];
+    const idx = list.findIndex(p => p.id === id);
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], ...proyecto };
+      localStorage.setItem(localKey, JSON.stringify(list));
+      return list[idx];
+    }
+    return { ...proyecto, id } as ProyectoEntregable;
+  }
+
+  async deleteProyecto(id: string): Promise<void> {
+    const user = await this.getUser();
+    const localKey = 'senati_proyectos_' + (user ? user.id : 'anon');
+
+    try {
+      if (user) {
+        await this.supabase
+          .from('senati_proyectos')
+          .delete()
+          .eq('id', id);
+      }
+    } catch (e) {
+      console.warn('Eliminando en local:', e);
+    }
+
+    const cached = localStorage.getItem(localKey);
+    if (cached) {
+      let list: ProyectoEntregable[] = JSON.parse(cached);
+      list = list.filter(p => p.id !== id);
+      localStorage.setItem(localKey, JSON.stringify(list));
+    }
   }
 }
