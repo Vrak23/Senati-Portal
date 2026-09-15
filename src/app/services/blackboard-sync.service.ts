@@ -52,17 +52,37 @@ export class BlackboardSyncService {
       cleanUrl = 'https://' + cleanUrl.slice(7);
     }
 
-    // 1. Intento directo
+    // 1. Intento principal mediante proxy de alta velocidad con soporte CORS y bypass WAF (Jina Reader)
+    try {
+      const resp = await fetch(`https://r.jina.ai/${cleanUrl}`, {
+        headers: { 'X-Return-Format': 'text' }
+      });
+      if (resp.ok) {
+        const text = await resp.text();
+        const extracted = this.extractVCalendar(text);
+        if (extracted) {
+          return extracted;
+        }
+      }
+    } catch (jinaErr) {
+      console.warn('Proxy principal (Jina) no disponible, intentando conexiones alternativas...', jinaErr);
+    }
+
+    // 2. Intento directo en caso de entorno con CORS permitido o extensión
     try {
       const resp = await fetch(cleanUrl, { mode: 'cors' });
       if (resp.ok) {
-        return await resp.text();
+        const text = await resp.text();
+        const extracted = this.extractVCalendar(text);
+        if (extracted) {
+          return extracted;
+        }
       }
     } catch (directErr) {
-      console.warn('Conexión directa bloqueada por CORS, usando proxy seguro...', directErr);
+      console.warn('Conexión directa bloqueada por CORS, usando proxys de respaldo...', directErr);
     }
 
-    // 2. Intento mediante proxy público seguro para navegadores
+    // 3. Proxys de respaldo adicionales
     const proxyUrls = [
       `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`,
       `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`
@@ -73,16 +93,28 @@ export class BlackboardSyncService {
         const resp = await fetch(pUrl);
         if (resp.ok) {
           const text = await resp.text();
-          if (text.includes('BEGIN:VCALENDAR')) {
-            return text;
+          const extracted = this.extractVCalendar(text);
+          if (extracted) {
+            return extracted;
           }
         }
       } catch (err) {
-        console.warn('Proxy fallido, probando alternativo:', err);
+        console.warn('Proxy de respaldo fallido:', err);
       }
     }
 
-    throw new Error('No se pudo descargar el feed de Blackboard. Verifica la URL o descarga el archivo .ics y súbelo directamente.');
+    throw new Error('No se pudo descargar el feed de Blackboard. Verifica que el enlace sea correcto o descarga el archivo .ics y súbelo directamente.');
+  }
+
+  /**
+   * Extrae limpiamente el bloque VCALENDAR del contenido recibido
+   */
+  private extractVCalendar(text: string): string | null {
+    if (!text || !text.includes('BEGIN:VCALENDAR')) return null;
+    const startIdx = text.indexOf('BEGIN:VCALENDAR');
+    const endIdx = text.lastIndexOf('END:VCALENDAR');
+    if (startIdx === -1 || endIdx === -1 || endIdx < startIdx) return null;
+    return text.substring(startIdx, endIdx + 'END:VCALENDAR'.length);
   }
 
   /**
@@ -92,7 +124,8 @@ export class BlackboardSyncService {
     const events: ParsedBlackboardEvent[] = [];
 
     // Desenvolver líneas plegadas (RFC 5545: una línea que comienza con espacio o tab continúa la anterior)
-    const unfolded = icsContent.replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '');
+    const cleanContent = this.extractVCalendar(icsContent) || icsContent;
+    const unfolded = cleanContent.replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '');
     const lines = unfolded.split(/\r?\n/);
 
     let inEvent = false;
@@ -182,31 +215,73 @@ export class BlackboardSyncService {
 
     const cursosMap = new Map<string, Curso>();
     cursosExistentes.forEach(c => {
-      if (c.nombre) cursosMap.set(c.nombre.toLowerCase().trim(), c);
+      if (c.nombre) cursosMap.set(this.normalizeString(c.nombre), c);
     });
 
     for (const ev of events) {
       try {
-        // 1. Determinar o crear el curso correspondiente
-        const courseName = ev.curso_nombre || 'General SENATI';
-        const courseKey = courseName.toLowerCase().trim();
-        let curso = cursosMap.get(courseKey);
+        // 1. Determinar el curso correspondiente inteligentemente
+        let matchedCurso: Curso | undefined;
+        const tituloNorm = this.normalizeString(ev.titulo);
 
-        if (!curso) {
-          // Crear el curso automáticamente si Blackboard trae una materia nueva
-          try {
-            curso = await this.supabaseService.addCurso({
-              nombre: courseName,
-              semestre: 4,
-              color: this.getRandomColor(),
-              link_blackboard: 'https://senati.blackboard.com/'
+        // A. Si se detectó el curso en los metadatos del evento
+        if (ev.curso_nombre) {
+          const courseKey = this.normalizeString(ev.curso_nombre);
+          matchedCurso = cursosMap.get(courseKey);
+          if (!matchedCurso) {
+            matchedCurso = cursosExistentes.find(c => {
+              const cNorm = this.normalizeString(c.nombre);
+              return cNorm.includes(courseKey) || courseKey.includes(cNorm);
             });
-            if (curso && curso.nombre) {
-              cursosMap.set(curso.nombre.toLowerCase().trim(), curso);
+          }
+        }
+
+        // B. Si no se encontró por metadatos, asociar por palabras clave del título
+        if (!matchedCurso && cursosExistentes.length > 0) {
+          // B1. Tareas de Informe / Práctica / Cuaderno de informes
+          if (tituloNorm.includes('informe') || tituloNorm.includes('practica') || tituloNorm.includes('cuaderno')) {
+            matchedCurso = cursosExistentes.find(c => {
+              const cNorm = this.normalizeString(c.nombre);
+              return cNorm.includes('informe') || cNorm.includes('practica') || cNorm.includes('cuaderno');
+            });
+          }
+
+          // B2. Buscar si las palabras distintivas de algún curso aparecen en el título
+          if (!matchedCurso) {
+            matchedCurso = cursosExistentes.find(c => {
+              const words = this.normalizeString(c.nombre).split(/\s+/).filter(w => w.length >= 4);
+              return words.some(w => tituloNorm.includes(w));
+            });
+          }
+        }
+
+        // C. Fallback: asociar a curso único, curso "Blackboard SENATI" o primer curso disponible
+        let curso = matchedCurso;
+        if (!curso) {
+          if (cursosExistentes.length === 1) {
+            curso = cursosExistentes[0];
+          } else {
+            const defaultName = ev.curso_nombre || 'Blackboard SENATI';
+            const defaultKey = this.normalizeString(defaultName);
+            curso = cursosMap.get(defaultKey);
+
+            if (!curso) {
+              try {
+                curso = await this.supabaseService.addCurso({
+                  nombre: defaultName,
+                  semestre: 4,
+                  color: this.getRandomColor(),
+                  link_blackboard: 'https://senati.blackboard.com/'
+                });
+                if (curso && curso.nombre) {
+                  cursosMap.set(this.normalizeString(curso.nombre), curso);
+                  cursosExistentes.push(curso);
+                }
+              } catch (cErr: any) {
+                console.warn('No se pudo crear curso contenedor:', cErr);
+                curso = cursosExistentes[0]; // fallback
+              }
             }
-          } catch (cErr: any) {
-            console.warn('No se pudo crear curso automático:', cErr);
-            curso = cursosExistentes[0]; // fallback al primer curso existente
           }
         }
 
@@ -218,8 +293,8 @@ export class BlackboardSyncService {
 
         // 2. Verificar si la tarea ya existe para evitar duplicados
         const tareaExistente = tareasExistentes.find(t => 
-          t.curso_id === cursoId && 
-          this.normalizeString(t.titulo) === this.normalizeString(ev.titulo)
+          (t.curso_id === cursoId || cursosExistentes.some(c => c.id === t.curso_id)) && 
+          this.normalizeString(t.titulo) === tituloNorm
         );
 
         if (tareaExistente && tareaExistente.id) {
@@ -238,7 +313,7 @@ export class BlackboardSyncService {
           }
         } else {
           // 3. Crear nueva tarea importada desde Blackboard
-          await this.supabaseService.addTarea({
+          const nueva = await this.supabaseService.addTarea({
             curso_id: cursoId,
             titulo: ev.titulo,
             descripcion: ev.descripcion ? ev.descripcion.slice(0, 300) : 'Importada automáticamente desde Blackboard SENATI.',
@@ -247,6 +322,7 @@ export class BlackboardSyncService {
             estado: 'pendiente',
             link_entrega: ev.link_entrega || 'https://senati.blackboard.com/'
           });
+          tareasExistentes.push(nueva);
           result.added++;
         }
       } catch (err: any) {
@@ -287,8 +363,13 @@ export class BlackboardSyncService {
         const d = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second)));
         return d.toISOString();
       } else {
-        const d = new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second));
-        return d.toISOString();
+        // En Perú (SENATI) la zona horaria oficial de Blackboard es America/Lima (UTC-5)
+        const d = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}-05:00`);
+        if (!isNaN(d.getTime())) {
+          return d.toISOString();
+        }
+        const fallback = new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second));
+        return fallback.toISOString();
       }
     }
     return new Date().toISOString();
