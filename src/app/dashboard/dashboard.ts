@@ -1304,6 +1304,12 @@ export class Dashboard implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  openBlackboardModalMobile() {
+    this.mobileMenuOpen = false;
+    this.openBlackboardModal();
+    this.cdr.detectChanges();
+  }
+
   openExternalLink(url: string, newTab: boolean = true) {
     this.mobileMenuOpen = false;
     this.cdr.detectChanges();

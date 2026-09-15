@@ -134,6 +134,18 @@
 
         <div class="hr my-1 opacity-25 border-top"></div>
 
+        <!-- Sincronizar Blackboard (Feed iCal) -->
+        <button 
+          type="button" 
+          (click)="openBlackboardModalMobile()" 
+          class="mobile-menu-link">
+          <div class="mobile-menu-icon-box text-primary">
+            <i class="bi bi-arrow-repeat" [class.spin-anim]="isSyncingBlackboard"></i>
+          </div>
+          <span class="flex-grow-1 text-start">Sincronizar Blackboard</span>
+          <span *ngIf="lastBlackboardSync" class="badge bg-success-subtle text-success small" title="Sincronizado">✓</span>
+        </button>
+
         <button 
           type="button" 
           (click)="openGestionCursosMobile()" 
@@ -226,10 +238,10 @@
       </div>
 
       <div class="d-flex align-items-center gap-1 ms-auto flex-shrink-0">
-        <!-- Botón Sincronizar Blackboard -->
+        <!-- Botón Sincronizar Blackboard (Solo visible en Desktop >= 768px; en móvil está en el menú hamburguesa) -->
         <button 
           (click)="openBlackboardModal()" 
-          class="btn btn-senati-subtle btn-sm fw-semibold d-flex align-items-center gap-1 border shadow-xs text-nowrap"
+          class="btn btn-senati-subtle btn-sm fw-semibold d-none d-md-flex align-items-center gap-1 border shadow-xs text-nowrap"
           title="Sincronizar tareas y evaluaciones con Blackboard Learn">
           <i class="bi bi-arrow-repeat text-primary" [class.spin-anim]="isSyncingBlackboard"></i>
           <span>Blackboard</span>
