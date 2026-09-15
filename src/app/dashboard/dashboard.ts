@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SupabaseService } from '../services/supabase.service';
 import { NotificationService } from '../services/notification.service';
+import { BlackboardSyncService, SyncResult } from '../services/blackboard-sync.service';
 import { Curso, Tarea, Evaluacion, PrioridadTarea, EstadoTarea, CalculoCurso, ProyectoEntregable, TipoEntregable, EstadoEntregable, ChecklistItem, ClaseHorario, DiaSemanaHorario } from '../models/senati.models';
 
 @Component({
@@ -53,7 +54,14 @@ export class Dashboard implements OnInit, OnDestroy {
   modalEvaluacionOpen = false;
   modalGestionCursosOpen = false;
   modalProyectoOpen = false;
+  modalBlackboardOpen = false;
   mobileMenuOpen = false;
+
+  // Sincronización Blackboard
+  blackboardFeedUrl = '';
+  isSyncingBlackboard = false;
+  blackboardSyncResult: SyncResult | null = null;
+  lastBlackboardSync: string | null = null;
 
   // Formulario Proyecto / Entregable
   editingProyectoId?: string;
@@ -153,12 +161,15 @@ export class Dashboard implements OnInit, OnDestroy {
   constructor(
     private supabaseService: SupabaseService,
     public notificationService: NotificationService,
+    public blackboardSyncService: BlackboardSyncService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
     this.loadTheme();
+    this.blackboardFeedUrl = this.blackboardSyncService.getSavedFeedUrl();
+    this.lastBlackboardSync = this.blackboardSyncService.getLastSyncDate();
     await this.loadUserProfile();
     await this.loadAllData();
     this.checkNotifications();
@@ -1313,6 +1324,80 @@ export class Dashboard implements OnInit, OnDestroy {
     this.mobileMenuOpen = false;
     this.cdr.detectChanges();
     await this.onLogout();
+  }
+
+  // --- SINCRONIZACIÓN BLACKBOARD SENATI ---
+  openBlackboardModal() {
+    this.modalBlackboardOpen = true;
+    this.blackboardSyncResult = null;
+    this.blackboardFeedUrl = this.blackboardSyncService.getSavedFeedUrl();
+    this.lastBlackboardSync = this.blackboardSyncService.getLastSyncDate();
+    this.cdr.detectChanges();
+  }
+
+  closeBlackboardModal() {
+    this.modalBlackboardOpen = false;
+    this.blackboardSyncResult = null;
+    this.cdr.detectChanges();
+  }
+
+  async syncBlackboardFromUrl() {
+    if (!this.blackboardFeedUrl.trim()) {
+      this.showToast('Ingresa la URL del feed iCal de Blackboard', 'danger');
+      return;
+    }
+
+    this.isSyncingBlackboard = true;
+    this.blackboardSyncResult = null;
+    this.blackboardSyncService.saveFeedUrl(this.blackboardFeedUrl);
+    this.cdr.detectChanges();
+
+    try {
+      const icsText = await this.blackboardSyncService.fetchIcs(this.blackboardFeedUrl);
+      await this.processIcsContent(icsText);
+    } catch (err: any) {
+      console.error(err);
+      this.showToast(err.message || 'Error al conectar con Blackboard', 'danger');
+    } finally {
+      this.isSyncingBlackboard = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  async handleIcsFileUpload(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    this.isSyncingBlackboard = true;
+    this.blackboardSyncResult = null;
+    this.cdr.detectChanges();
+
+    try {
+      const text = await file.text();
+      await this.processIcsContent(text);
+      input.value = '';
+    } catch (err: any) {
+      this.showToast('Error al procesar el archivo .ics', 'danger');
+    } finally {
+      this.isSyncingBlackboard = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  private async processIcsContent(icsText: string) {
+    const events = this.blackboardSyncService.parseIcs(icsText);
+    if (events.length === 0) {
+      this.showToast('No se encontraron tareas o fechas en el archivo de Blackboard', 'info');
+      return;
+    }
+
+    const result = await this.blackboardSyncService.syncToDatabase(events);
+    this.blackboardSyncResult = result;
+    this.lastBlackboardSync = new Date().toISOString();
+
+    await this.loadAllData();
+    this.showToast(`¡Sincronizado! +${result.added} nuevas, ${result.updated} actualizadas`);
   }
 
   async onLogout() {

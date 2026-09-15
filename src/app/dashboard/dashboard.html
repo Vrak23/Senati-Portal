@@ -225,15 +225,26 @@
         </button>
       </div>
 
-      <!-- Botón Exportar Calendario -->
-      <button 
-        (click)="exportarCalendarioICS()" 
-        class="btn btn-ghost btn-sm text-primary fw-semibold d-flex align-items-center gap-1 border shadow-xs text-nowrap flex-shrink-0 ms-auto"
-        title="Descargar archivo .ics compatible con Outlook SENATI, Google Calendar y Windows Calendar">
-        <i class="bi bi-calendar2-week"></i>
-        <span class="d-none d-sm-inline">Exportar Calendario (.ics)</span>
-        <span class="d-inline d-sm-none">.ics</span>
-      </button>
+      <div class="d-flex align-items-center gap-1 ms-auto flex-shrink-0">
+        <!-- Botón Sincronizar Blackboard -->
+        <button 
+          (click)="openBlackboardModal()" 
+          class="btn btn-senati-subtle btn-sm fw-semibold d-flex align-items-center gap-1 border shadow-xs text-nowrap"
+          title="Sincronizar tareas y evaluaciones con Blackboard Learn">
+          <i class="bi bi-arrow-repeat text-primary" [class.spin-anim]="isSyncingBlackboard"></i>
+          <span>Blackboard</span>
+          <span *ngIf="lastBlackboardSync" class="badge bg-success-subtle text-success p-1 ms-1" style="font-size:0.65rem;" title="Sincronizado">✓</span>
+        </button>
+
+        <!-- Botón Exportar Calendario -->
+        <button 
+          (click)="exportarCalendarioICS()" 
+          class="btn btn-ghost btn-sm text-primary fw-semibold d-flex align-items-center gap-1 border shadow-xs text-nowrap"
+          title="Descargar archivo .ics compatible con Outlook SENATI, Google Calendar y Windows Calendar">
+          <i class="bi bi-calendar2-week"></i>
+          <span class="d-none d-sm-inline">Exportar (.ics)</span>
+        </button>
+      </div>
     </div>
   </div>
   </div>
@@ -1218,6 +1229,105 @@
               <button type="submit" class="btn btn-senati-subtle btn-sm px-3">Guardar</button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- MODAL: SINCRONIZAR BLACKBOARD SENATI                 -->
+  <!-- ==================================================== -->
+  <div *ngIf="modalBlackboardOpen" class="modal fade show d-block modal-backdrop-custom" tabindex="-1" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable px-2" style="max-width: 540px;">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header border-bottom py-3 px-3 px-md-4">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-5">⚡</span>
+            <div>
+              <h6 class="modal-title fw-bold text-dark mb-0">Sincronizar con Blackboard SENATI</h6>
+              <small class="text-muted" style="font-size: 0.72rem;">Importa tareas, fechas límites y entregables oficiales</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close" (click)="closeBlackboardModal()"></button>
+        </div>
+
+        <div class="modal-body p-3 p-md-4">
+          <!-- Guía Paso a Paso -->
+          <div class="p-3 rounded-3 bg-light border mb-3">
+            <div class="fw-bold small text-dark mb-2">📌 ¿Cómo obtener tu enlace iCal de Blackboard?</div>
+            <ol class="small text-muted ps-3 mb-0" style="font-size: 0.8rem; line-height: 1.5;">
+              <li>Inicia sesión en <a href="https://senati.blackboard.com/" target="_blank" class="fw-medium text-primary">senati.blackboard.com</a>.</li>
+              <li>En el menú izquierdo, entra a <strong>Calendario</strong>.</li>
+              <li>Al fondo de la página o en la configuración, haz clic en <strong>"Compartir Calendario"</strong> u <strong>"Obtener enlace iCal"</strong>.</li>
+              <li>Copia el enlace que empieza con <code class="text-dark">webcal://</code> o <code class="text-dark">https://</code>.</li>
+            </ol>
+          </div>
+
+          <!-- Opción 1: Enlace URL -->
+          <div class="mb-4">
+            <label class="form-label small fw-semibold text-dark mb-1">Enlace del Feed iCal de Blackboard:</label>
+            <div class="input-group">
+              <input 
+                type="url" 
+                class="form-control form-control-clean font-monospace small" 
+                [(ngModel)]="blackboardFeedUrl" 
+                placeholder="https://senati.blackboard.com/webapps/calendar/..."
+                [disabled]="isSyncingBlackboard"
+              />
+              <button 
+                (click)="syncBlackboardFromUrl()" 
+                class="btn btn-primary d-flex align-items-center gap-1"
+                [disabled]="isSyncingBlackboard || !blackboardFeedUrl.trim()">
+                <span *ngIf="isSyncingBlackboard" class="spinner-border spinner-border-sm me-1" role="status"></span>
+                <i *ngIf="!isSyncingBlackboard" class="bi bi-cloud-arrow-down"></i>
+                <span>{{ isSyncingBlackboard ? 'Sincronizando...' : 'Sincronizar' }}</span>
+              </button>
+            </div>
+            <small class="text-muted d-block mt-1" style="font-size: 0.72rem;">
+              Guardaremos tu enlace para que puedas sincronizarlo en un clic cuando quieras.
+            </small>
+          </div>
+
+          <!-- Divisor -->
+          <div class="d-flex align-items-center my-3 text-muted">
+            <hr class="flex-grow-1 my-0">
+            <span class="px-2 small fw-semibold" style="font-size: 0.75rem;">O SUBIR ARCHIVO .ICS</span>
+            <hr class="flex-grow-1 my-0">
+          </div>
+
+          <!-- Opción 2: Subir archivo .ics descargado -->
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-dark mb-1">Cargar archivo .ics descargado de Blackboard:</label>
+            <input 
+              type="file" 
+              accept=".ics,text/calendar" 
+              (change)="handleIcsFileUpload($event)" 
+              class="form-control form-control-sm"
+              [disabled]="isSyncingBlackboard"
+            />
+            <small class="text-muted d-block mt-1" style="font-size: 0.72rem;">
+              Útil si prefieres descargar tu calendario desde Blackboard y subirlo manualmente.
+            </small>
+          </div>
+
+          <!-- Resumen de Resultados -->
+          <div *ngIf="blackboardSyncResult" class="alert alert-success py-2 px-3 small mt-3 mb-0 rounded-3">
+            <div class="fw-bold mb-1">✓ Sincronización Exitosa:</div>
+            <ul class="mb-0 ps-3">
+              <li><strong>{{ blackboardSyncResult.added }}</strong> tareas nuevas agregadas.</li>
+              <li><strong>{{ blackboardSyncResult.updated }}</strong> tareas actualizadas con nuevas fechas.</li>
+              <li><strong>{{ blackboardSyncResult.skipped }}</strong> tareas ya existentes sin cambios.</li>
+            </ul>
+          </div>
+
+          <!-- Última sincronización -->
+          <div *ngIf="lastBlackboardSync" class="text-muted small mt-3 text-center" style="font-size: 0.73rem;">
+            🕒 Última sincronización: {{ formatDate(lastBlackboardSync) }}
+          </div>
+        </div>
+
+        <div class="modal-footer border-top py-2 px-3 px-md-4">
+          <button type="button" class="btn btn-ghost btn-sm" (click)="closeBlackboardModal()">Cerrar</button>
         </div>
       </div>
     </div>
