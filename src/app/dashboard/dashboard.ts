@@ -818,6 +818,31 @@ export class Dashboard implements OnInit, OnDestroy {
     await this.loadEvaluaciones();
   }
 
+  async aplicarPlantillaATodosLosCursos() {
+    if (this.cursos.length === 0) {
+      this.showToast('No tienes cursos registrados aún.', 'info');
+      return;
+    }
+
+    if (!confirm(`¿Aplicar la plantilla oficial de Blackboard SENATI (100%) a TODOS tus cursos (${this.cursos.length} materias)?\n\n- Evaluaciones Parciales T01 a T05 (2% c/u = 10%)\n- Actitudes (10%)\n- Participación (10%)\n- Nota IP_Empresa (20%)\n- Entregable E01 (20%)\n- Examen Final (30%)\n\nSe configurará la tabla de notas oficial en cada una de tus materias.`)) return;
+
+    try {
+      for (const curso of this.cursos) {
+        if (!curso.id) continue;
+        const evalsCurso = this.evaluaciones.filter(e => e.curso_id === curso.id);
+        for (const ev of evalsCurso) {
+          if (ev.id) await this.supabaseService.deleteEvaluacion(ev.id);
+        }
+        await this.crearPlantillaEvaluaciones(curso.id);
+      }
+      this.showToast('¡Esquema oficial de notas aplicado a todos tus cursos! 🚀', 'success');
+      await this.loadEvaluaciones();
+    } catch (err: any) {
+      console.error(err);
+      this.showToast('Error al aplicar plantilla a todos los cursos', 'danger');
+    }
+  }
+
   // --- HELPERS ---
   formatDate(dateStr: string): string {
     const d = new Date(dateStr);

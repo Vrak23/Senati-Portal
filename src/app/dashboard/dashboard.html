@@ -858,8 +858,11 @@
               <button (click)="openAddEvaluacionModal()" class="btn btn-senati-subtle btn-sm d-flex align-items-center gap-1 shadow-xs">
                 <i class="bi bi-plus-lg"></i> Nueva Nota
               </button>
-              <button (click)="aplicarPlantillaOficialSenati()" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1 shadow-xs" title="Cargar esquema oficial de Blackboard SENATI (T01 a T05 2% c/u, Actitudes 10%, Participación 10%, IP_Empresa 20%, Entregable 20%, Final 30%)">
-                ⚡ Plantilla Oficial SENATI (100%)
+              <button (click)="aplicarPlantillaOficialSenati()" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1 shadow-xs" title="Cargar esquema oficial de Blackboard SENATI para este curso seleccionado">
+                ⚡ Plantilla Este Curso
+              </button>
+              <button (click)="aplicarPlantillaATodosLosCursos()" class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-xs" title="Aplicar el esquema oficial de Blackboard a TODOS tus cursos registrados">
+                ✨ Aplicar a Todos los Cursos
               </button>
             </div>
           </div>
@@ -903,10 +906,13 @@
                 </tr>
                 <tr *ngIf="calculoCursoActual.evaluaciones.length === 0">
                   <td colspan="4" class="text-center py-4 text-muted small">
-                    <div class="mb-3">No hay evaluaciones registradas para este curso.</div>
+                    <div class="mb-3">No hay evaluaciones registradas para este curso. Elige una opción:</div>
                     <div class="d-flex justify-content-center gap-2 flex-wrap">
                       <button (click)="aplicarPlantillaOficialSenati()" class="btn btn-primary btn-sm">
-                        ⚡ Cargar Plantilla Oficial SENATI (100%)
+                        ⚡ Cargar en Este Curso
+                      </button>
+                      <button (click)="aplicarPlantillaATodosLosCursos()" class="btn btn-outline-primary btn-sm">
+                        ✨ Aplicar a Todos los Cursos
                       </button>
                       <button (click)="openAddEvaluacionModal()" class="btn btn-senati-subtle btn-sm">
                         + Nueva Nota Manual
