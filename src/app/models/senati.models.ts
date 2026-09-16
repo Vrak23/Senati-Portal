@@ -42,7 +42,9 @@ export interface CalculoCurso {
   curso: Curso;
   evaluaciones: Evaluacion[];
   porcentajeRegistrado: number;
-  promedioPonderadoActual: number;
+  promedioPonderadoActual: number; // Nota actual relativa a lo calificado (ej. 10.3)
+  puntosAcumulados: number; // Puntos acumulados de 20 (ej. 5.16)
+  pesoNotasConCalificacion: number; // % que ya tiene nota (ej. 50%)
   porcentajeRestante: number;
   notaFinalNecesariaMinima: number | null; // Para aprobar con 10.5
   notaFinalNecesariaNotable: number | null; // Para sacar 14+

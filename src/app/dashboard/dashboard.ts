@@ -596,31 +596,39 @@ export class Dashboard implements OnInit, OnDestroy {
 
     for (const ev of evals) {
       ponderacionTotalRegistrada += Number(ev.ponderacion) || 0;
-      if (ev.nota_obtenida !== null && ev.nota_obtenida !== undefined && !isNaN(Number(ev.nota_obtenida))) {
+      if (ev.nota_obtenida !== null && ev.nota_obtenida !== undefined && !isNaN(Number(ev.nota_obtenida)) && (ev.nota_obtenida as any) !== '') {
         sumaPonderadaNotas += (Number(ev.nota_obtenida) * Number(ev.ponderacion)) / 100;
         pesoNotasConCalificacion += Number(ev.ponderacion);
       }
     }
 
-    const pesoFaltante = 100 - pesoNotasConCalificacion;
+    const pesoFaltante = Math.max(0, 100 - pesoNotasConCalificacion);
     const notaMinimaAprobatoria = 10.5;
     const notaNotable = 14;
+
+    // Promedio Ponderado Actual Relativo (Exactamente como lo calcula Blackboard en "Calificación Actual"):
+    // Divide los puntos ganados entre la fracción del curso evaluada a la fecha
+    const promedioActualRelativo = pesoNotasConCalificacion > 0 
+      ? Math.round((sumaPonderadaNotas / (pesoNotasConCalificacion / 100)) * 100) / 100
+      : 0;
 
     let notaFinalNecesariaMinima: number | null = null;
     let notaFinalNecesariaNotable: number | null = null;
 
     if (pesoFaltante > 0) {
-      const puntosFaltantes = notaMinimaAprobatoria - sumaPonderadaNotas;
-      notaFinalNecesariaMinima = (puntosFaltantes * 100) / pesoFaltante;
+      const puntosFaltantes = Math.max(0, notaMinimaAprobatoria - sumaPonderadaNotas);
+      notaFinalNecesariaMinima = Math.round(((puntosFaltantes * 100) / pesoFaltante) * 100) / 100;
 
-      const puntosNotable = notaNotable - sumaPonderadaNotas;
-      notaFinalNecesariaNotable = (puntosNotable * 100) / pesoFaltante;
+      const puntosNotable = Math.max(0, notaNotable - sumaPonderadaNotas);
+      notaFinalNecesariaNotable = Math.round(((puntosNotable * 100) / pesoFaltante) * 100) / 100;
     }
 
     let estado: 'aprobado' | 'en_carrera' | 'en_riesgo' | 'desaprobado' = 'en_carrera';
 
     if (sumaPonderadaNotas >= notaMinimaAprobatoria) {
       estado = 'aprobado';
+    } else if (pesoFaltante === 0 && sumaPonderadaNotas < notaMinimaAprobatoria) {
+      estado = 'desaprobado';
     } else if (notaFinalNecesariaMinima !== null && notaFinalNecesariaMinima > 20) {
       estado = 'desaprobado';
     } else if (notaFinalNecesariaMinima !== null && notaFinalNecesariaMinima > 14) {
@@ -633,10 +641,12 @@ export class Dashboard implements OnInit, OnDestroy {
       curso,
       evaluaciones: evals,
       porcentajeRegistrado: ponderacionTotalRegistrada,
-      promedioPonderadoActual: Math.round(sumaPonderadaNotas * 100) / 100,
-      porcentajeRestante: pesoFaltante,
-      notaFinalNecesariaMinima: notaFinalNecesariaMinima !== null ? Math.round(notaFinalNecesariaMinima * 100) / 100 : null,
-      notaFinalNecesariaNotable: notaFinalNecesariaNotable !== null ? Math.round(notaFinalNecesariaNotable * 100) / 100 : null,
+      promedioPonderadoActual: promedioActualRelativo, // ej: 10.32 como Blackboard
+      puntosAcumulados: Math.round(sumaPonderadaNotas * 100) / 100, // ej: 5.16 / 20 pts
+      pesoNotasConCalificacion: pesoNotasConCalificacion, // ej: 50%
+      porcentajeRestante: pesoFaltante, // ej: 50%
+      notaFinalNecesariaMinima: notaFinalNecesariaMinima !== null ? (sumaPonderadaNotas >= notaMinimaAprobatoria ? 0 : notaFinalNecesariaMinima) : null,
+      notaFinalNecesariaNotable: notaFinalNecesariaNotable !== null ? (sumaPonderadaNotas >= notaNotable ? 0 : notaFinalNecesariaNotable) : null,
       estado
     };
   }
@@ -771,15 +781,25 @@ export class Dashboard implements OnInit, OnDestroy {
 
   async aplicarPlantillaDesarrolloWeb() {
     if (!this.selectedCursoCalculadoraId) return;
-    if (!confirm('¿Cargar el esquema oficial de Desarrollo de Aplicaciones Web?\n\n- Nota IP_Empresa: 20%\n- Evaluación Parcial: 10%\n- Actitudes: 10%\n- Participación: 10%\n- Trabajo_Proyecto: 20%\n- Examen Final: 30%')) return;
+    if (!confirm('¿Cargar el desglose oficial de Blackboard para Desarrollo de Aplicaciones Web?\n\n- Evaluaciones Parciales T01 a T05 (2% c/u = 10%)\n- Actitudes (10%)\n- Participación (10%)\n- Nota IP_Empresa (20%)\n- Entregable E01 (20%)\n- Examen Final (30%)\n\nSe reemplazarán las evaluaciones anteriores de este curso con las notas de Blackboard.')) return;
+
+    // Eliminar evaluaciones anteriores de este curso para evitar duplicados
+    const evalsActuales = this.evaluacionesCursoSeleccionado;
+    for (const ev of evalsActuales) {
+      if (ev.id) await this.supabaseService.deleteEvaluacion(ev.id);
+    }
 
     const plantillaWeb = [
-      { nombre: 'Nota IP_Empresa', peso: 20 },
-      { nombre: 'Evaluación Parcial', peso: 10 },
-      { nombre: 'Actitudes', peso: 10 },
-      { nombre: 'Participación', peso: 10 },
-      { nombre: 'Trabajo_Proyecto', peso: 20 },
-      { nombre: 'Examen Final', peso: 30 }
+      { nombre: 'Evaluación Parcial T01', peso: 2, nota: 20 },
+      { nombre: 'Evaluación Parcial T02', peso: 2, nota: 16 },
+      { nombre: 'Evaluación Parcial T03', peso: 2, nota: 20 },
+      { nombre: 'Evaluación Parcial T04', peso: 2, nota: 16 },
+      { nombre: 'Evaluación Parcial T05', peso: 2, nota: 20 },
+      { nombre: 'Actitudes', peso: 10, nota: 16 },
+      { nombre: 'Participación', peso: 10, nota: 17 },
+      { nombre: 'Nota IP_empresa', peso: 20, nota: 0.1 },
+      { nombre: 'Entregable - E01', peso: 20, nota: null },
+      { nombre: 'Examen Final', peso: 30, nota: null }
     ];
 
     for (const item of plantillaWeb) {
@@ -787,10 +807,10 @@ export class Dashboard implements OnInit, OnDestroy {
         curso_id: this.selectedCursoCalculadoraId,
         nombre_evaluacion: item.nombre,
         ponderacion: item.peso,
-        nota_obtenida: null
+        nota_obtenida: item.nota
       });
     }
-    this.showToast('¡Esquema de Desarrollo Web cargado (100%)! 🚀', 'success');
+    this.showToast('¡Desglose oficial de Blackboard cargado (100%)! 🚀', 'success');
     await this.loadEvaluaciones();
   }
 
