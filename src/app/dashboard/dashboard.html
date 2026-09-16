@@ -313,6 +313,13 @@
         <button 
           type="button" 
           class="filter-tab" 
+          [class.active]="filtroEstado === 'vencidas'" 
+          (click)="filtroEstado = 'vencidas'">
+          Vencidas <span class="filter-count" [class.bg-danger]="tareasVencidas > 0" [class.text-white]="tareasVencidas > 0">{{ tareasVencidas }}</span>
+        </button>
+        <button 
+          type="button" 
+          class="filter-tab" 
           [class.active]="filtroEstado === 'entregado'" 
           (click)="filtroEstado = 'entregado'">
           Entregadas <span class="filter-count">{{ tareasEntregadas }}</span>
@@ -360,9 +367,9 @@
 
               <!-- Fila de Etiquetas: Curso, Prioridad, Estado -->
               <div class="d-flex flex-wrap align-items-center gap-2 mt-1 mb-1">
-                <span class="subtle-course-tag">
-                  <span class="subtle-dot" [style.background-color]="t.curso?.color || '#0284c7'"></span>
-                  {{ t.curso?.nombre || 'General' }}
+                <span class="subtle-course-tag" [style.border-color]="(getCursoDeTarea(t)?.color || '#0284c7') + '50'" [title]="'Curso: ' + (getCursoDeTarea(t)?.nombre || 'General SENATI')">
+                  <span class="subtle-dot" [style.background-color]="getCursoDeTarea(t)?.color || '#0284c7'"></span>
+                  <span class="fw-semibold text-truncate" style="max-width: 280px;">{{ getCursoDeTarea(t)?.nombre || 'General SENATI' }}</span>
                 </span>
 
                 <span class="subtle-priority-tag" [ngClass]="'priority-' + t.prioridad">
@@ -840,9 +847,17 @@
               <i class="bi bi-card-checklist text-primary fs-5"></i>
               <h6 class="fw-bold mb-0 text-dark">Evaluaciones del Curso</h6>
             </div>
-            <button (click)="aplicarPlantillaBlackboardActual()" class="btn btn-ghost btn-sm text-primary border shadow-xs" title="Cargar TR1, TR2, Foro y Examen Final estándar de Blackboard">
-              ⚡ Aplicar Plantilla Blackboard SENATI
-            </button>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <button (click)="openAddEvaluacionModal()" class="btn btn-senati-subtle btn-sm d-flex align-items-center gap-1 shadow-xs">
+                <i class="bi bi-plus-lg"></i> Nueva Nota
+              </button>
+              <button (click)="aplicarPlantillaDesarrolloWeb()" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1 shadow-xs" title="Cargar esquema oficial de Desarrollo de Aplicaciones Web (IP_Empresa 20%, Parcial 10%, Actitudes 10%, Participación 10%, Proyecto 20%, Final 30%)">
+                ⚡ Esquema Desarrollo Web (100%)
+              </button>
+              <button (click)="aplicarPlantillaBlackboardActual()" class="btn btn-ghost btn-sm text-secondary border shadow-xs" title="Cargar TR1, TR2, Foro y Examen Final estándar de Blackboard">
+                📋 Plantilla General SENATI
+              </button>
+            </div>
           </div>
           <div class="table-responsive">
             <table class="table senati-eval-table align-middle mb-0">
@@ -870,9 +885,13 @@
                            [style.backgroundColor]="getColorNotaBg(ev.nota_obtenida)"
                            [value]="ev.nota_obtenida ?? ''" 
                            (change)="quickUpdateNota(ev, $any($event.target).value)" 
+                           (blur)="quickUpdateNota(ev, $any($event.target).value)" 
                            placeholder="Sin nota">
                   </td>
-                  <td class="text-end pe-3">
+                  <td class="text-end pe-3 text-nowrap">
+                    <button (click)="openEditEvaluacionModal(ev)" class="btn btn-ghost-icon btn-sm text-secondary me-1" title="Editar nombre o ponderación">
+                      <i class="bi bi-pencil"></i>
+                    </button>
                     <button (click)="deleteEvaluacion(ev)" class="btn btn-ghost-icon btn-sm text-secondary hover-danger" title="Eliminar evaluación">
                       <i class="bi bi-trash"></i>
                     </button>
@@ -880,7 +899,18 @@
                 </tr>
                 <tr *ngIf="calculoCursoActual.evaluaciones.length === 0">
                   <td colspan="4" class="text-center py-4 text-muted small">
-                    No hay evaluaciones registradas para este curso. Haz clic en "+ Nueva Nota" o en "Aplicar Plantilla Blackboard SENATI".
+                    <div class="mb-3">No hay evaluaciones registradas para este curso. Elige una opción rápida:</div>
+                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                      <button (click)="aplicarPlantillaDesarrolloWeb()" class="btn btn-primary btn-sm">
+                        ⚡ Cargar Esquema Desarrollo Web (100%)
+                      </button>
+                      <button (click)="aplicarPlantillaBlackboardActual()" class="btn btn-outline-secondary btn-sm">
+                        📋 Cargar Plantilla General SENATI
+                      </button>
+                      <button (click)="openAddEvaluacionModal()" class="btn btn-senati-subtle btn-sm">
+                        + Nueva Nota Manual
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>

@@ -44,7 +44,7 @@ export class Dashboard implements OnInit, OnDestroy {
   proyectos: ProyectoEntregable[] = [];
 
   // Filtros de Tareas
-  filtroEstado: 'todos' | EstadoTarea = 'pendiente';
+  filtroEstado: 'todos' | EstadoTarea | 'vencidas' = 'pendiente';
   filtroCursoId: string = 'todos';
   filtroPrioridad: string = 'todas';
 
@@ -220,8 +220,8 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   async loadAllData() {
+    await this.loadCursos();
     await Promise.all([
-      this.loadCursos(),
       this.loadTareas(),
       this.loadEvaluaciones(),
       this.loadProyectos()
@@ -242,9 +242,37 @@ export class Dashboard implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-
   async loadTareas() {
-    this.tareas = await this.supabaseService.getTareas();
+    const rawTareas = await this.supabaseService.getTareas();
+    this.tareas = rawTareas.map(t => {
+      let curso = t.curso;
+      if (!curso && t.curso_id) {
+        curso = this.cursos.find(c => c.id === t.curso_id);
+      }
+      // Enlace inteligente por nombre si el ID de curso no estaba asignado
+      if (!curso && this.cursos.length > 0) {
+        const tit = (t.titulo || '').toLowerCase();
+        if (tit.includes('informe') || tit.includes('practica') || tit.includes('cuaderno')) {
+          curso = this.cursos.find(c => {
+            const n = c.nombre.toLowerCase();
+            return n.includes('informe') || n.includes('practica') || n.includes('cuaderno');
+          });
+        }
+        if (!curso) {
+          curso = this.cursos.find(c => {
+            const words = c.nombre.toLowerCase().split(/\s+/).filter(w => w.length >= 4);
+            return words.some(w => tit.includes(w));
+          });
+        }
+        if (!curso) {
+          curso = this.cursos[0];
+        }
+      }
+      return {
+        ...t,
+        curso
+      };
+    });
     this.notificationService.checkDueTasks(this.tareas);
     this.cdr.detectChanges();
   }
@@ -290,6 +318,11 @@ export class Dashboard implements OnInit, OnDestroy {
     return this.tareas.filter(t => t.estado === 'entregado').length;
   }
 
+  get tareasVencidas(): number {
+    const now = new Date().getTime();
+    return this.tareas.filter(t => t.estado !== 'entregado' && new Date(t.fecha_limite).getTime() < now).length;
+  }
+
   get tareasUrgentes(): number {
     const now = new Date().getTime();
     const twoDaysMs = 48 * 60 * 60 * 1000;
@@ -301,10 +334,30 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   // --- FILTRO DE TAREAS ---
+  getCursoDeTarea(tarea: Tarea): Curso | undefined {
+    if (tarea.curso && tarea.curso.nombre) return tarea.curso;
+    if (tarea.curso_id) {
+      return this.cursos.find(c => c.id === tarea.curso_id);
+    }
+    return undefined;
+  }
+
   get filteredTareas(): Tarea[] {
     return this.tareas.filter(t => {
-      const matchEstado = this.filtroEstado === 'todos' || t.estado === this.filtroEstado;
-      const matchCurso = this.filtroCursoId === 'todos' || t.curso_id === this.filtroCursoId;
+      let matchEstado = false;
+      if (this.filtroEstado === 'todos') {
+        matchEstado = true;
+      } else if (this.filtroEstado === 'vencidas') {
+        matchEstado = t.estado !== 'entregado' && this.isTaskOverdue(t.fecha_limite);
+      } else {
+        matchEstado = t.estado === this.filtroEstado;
+      }
+
+      const cursoDeTarea = this.getCursoDeTarea(t);
+      const matchCurso = this.filtroCursoId === 'todos' || 
+                         t.curso_id === this.filtroCursoId || 
+                         cursoDeTarea?.id === this.filtroCursoId;
+
       const matchPrioridad = this.filtroPrioridad === 'todas' || t.prioridad === this.filtroPrioridad;
       return matchEstado && matchCurso && matchPrioridad;
     });
@@ -634,6 +687,18 @@ export class Dashboard implements OnInit, OnDestroy {
     this.modalEvaluacionOpen = true;
   }
 
+  openEditEvaluacionModal(ev: Evaluacion) {
+    this.editingEvaluacionId = ev.id;
+    this.formEvaluacion = {
+      curso_id: ev.curso_id,
+      nombre_evaluacion: ev.nombre_evaluacion,
+      ponderacion: ev.ponderacion,
+      nota_obtenida: ev.nota_obtenida !== null && ev.nota_obtenida !== undefined ? ev.nota_obtenida : null
+    };
+    this.errorEvaluacion = '';
+    this.modalEvaluacionOpen = true;
+  }
+
   async saveEvaluacion() {
     if (!this.formEvaluacion.nombre_evaluacion.trim() || !this.formEvaluacion.curso_id) {
       this.errorEvaluacion = 'Nombre de la evaluación y curso son obligatorios.';
@@ -645,20 +710,28 @@ export class Dashboard implements OnInit, OnDestroy {
       return;
     }
 
+    const notaFinal = this.formEvaluacion.nota_obtenida !== null && 
+                      this.formEvaluacion.nota_obtenida !== undefined && 
+                      (this.formEvaluacion.nota_obtenida as any) !== '' 
+                      ? Math.min(20, Math.max(0, Number(this.formEvaluacion.nota_obtenida))) 
+                      : null;
+
     try {
       if (this.editingEvaluacionId) {
         await this.supabaseService.updateEvaluacion(this.editingEvaluacionId, {
           nombre_evaluacion: this.formEvaluacion.nombre_evaluacion.trim(),
           ponderacion: this.formEvaluacion.ponderacion,
-          nota_obtenida: this.formEvaluacion.nota_obtenida !== null && this.formEvaluacion.nota_obtenida !== undefined ? Number(this.formEvaluacion.nota_obtenida) : null
+          nota_obtenida: notaFinal
         });
+        this.showToast('Evaluación actualizada correctamente ✏️', 'success');
       } else {
         await this.supabaseService.addEvaluacion({
           curso_id: this.formEvaluacion.curso_id,
           nombre_evaluacion: this.formEvaluacion.nombre_evaluacion.trim(),
           ponderacion: this.formEvaluacion.ponderacion,
-          nota_obtenida: this.formEvaluacion.nota_obtenida !== null && this.formEvaluacion.nota_obtenida !== undefined ? Number(this.formEvaluacion.nota_obtenida) : null
+          nota_obtenida: notaFinal
         });
+        this.showToast('¡Nueva evaluación registrada! 📝', 'success');
       }
 
       this.modalEvaluacionOpen = false;
@@ -675,9 +748,11 @@ export class Dashboard implements OnInit, OnDestroy {
     try {
       await this.supabaseService.updateEvaluacion(ev.id, { nota_obtenida: valor });
       ev.nota_obtenida = valor;
+      this.showToast(`Nota guardada: ${valor !== null ? valor : 'Sin nota'} (${ev.nombre_evaluacion})`, 'success');
       this.cdr.detectChanges();
     } catch (err) {
       console.error('Error al actualizar nota:', err);
+      this.showToast('Error al guardar nota', 'danger');
     }
   }
 
@@ -687,10 +762,36 @@ export class Dashboard implements OnInit, OnDestroy {
 
     try {
       await this.supabaseService.deleteEvaluacion(ev.id);
+      this.showToast('Evaluación eliminada 🗑️', 'info');
       await this.loadEvaluaciones();
     } catch (err) {
       console.error('Error al eliminar evaluación:', err);
     }
+  }
+
+  async aplicarPlantillaDesarrolloWeb() {
+    if (!this.selectedCursoCalculadoraId) return;
+    if (!confirm('¿Cargar el esquema oficial de Desarrollo de Aplicaciones Web?\n\n- Nota IP_Empresa: 20%\n- Evaluación Parcial: 10%\n- Actitudes: 10%\n- Participación: 10%\n- Trabajo_Proyecto: 20%\n- Examen Final: 30%')) return;
+
+    const plantillaWeb = [
+      { nombre: 'Nota IP_Empresa', peso: 20 },
+      { nombre: 'Evaluación Parcial', peso: 10 },
+      { nombre: 'Actitudes', peso: 10 },
+      { nombre: 'Participación', peso: 10 },
+      { nombre: 'Trabajo_Proyecto', peso: 20 },
+      { nombre: 'Examen Final', peso: 30 }
+    ];
+
+    for (const item of plantillaWeb) {
+      await this.supabaseService.addEvaluacion({
+        curso_id: this.selectedCursoCalculadoraId,
+        nombre_evaluacion: item.nombre,
+        ponderacion: item.peso,
+        nota_obtenida: null
+      });
+    }
+    this.showToast('¡Esquema de Desarrollo Web cargado (100%)! 🚀', 'success');
+    await this.loadEvaluaciones();
   }
 
   async crearPlantillaEvaluaciones(cursoId: string) {
@@ -716,6 +817,7 @@ export class Dashboard implements OnInit, OnDestroy {
     if (!confirm('¿Cargar la plantilla estándar de Blackboard SENATI para este curso (TR1, TR2, Foro, Examen Final)?')) return;
 
     await this.crearPlantillaEvaluaciones(this.selectedCursoCalculadoraId);
+    this.showToast('¡Plantilla general SENATI cargada! 📋', 'success');
     await this.loadEvaluaciones();
   }
 
