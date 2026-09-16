@@ -858,11 +858,8 @@
               <button (click)="openAddEvaluacionModal()" class="btn btn-senati-subtle btn-sm d-flex align-items-center gap-1 shadow-xs">
                 <i class="bi bi-plus-lg"></i> Nueva Nota
               </button>
-              <button (click)="aplicarPlantillaDesarrolloWeb()" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1 shadow-xs" title="Cargar esquema oficial de Desarrollo de Aplicaciones Web (IP_Empresa 20%, Parcial 10%, Actitudes 10%, Participación 10%, Proyecto 20%, Final 30%)">
-                ⚡ Esquema Desarrollo Web (100%)
-              </button>
-              <button (click)="aplicarPlantillaBlackboardActual()" class="btn btn-ghost btn-sm text-secondary border shadow-xs" title="Cargar TR1, TR2, Foro y Examen Final estándar de Blackboard">
-                📋 Plantilla General SENATI
+              <button (click)="aplicarPlantillaOficialSenati()" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1 shadow-xs" title="Cargar esquema oficial de Blackboard SENATI (T01 a T05 2% c/u, Actitudes 10%, Participación 10%, IP_Empresa 20%, Entregable 20%, Final 30%)">
+                ⚡ Plantilla Oficial SENATI (100%)
               </button>
             </div>
           </div>
@@ -906,13 +903,10 @@
                 </tr>
                 <tr *ngIf="calculoCursoActual.evaluaciones.length === 0">
                   <td colspan="4" class="text-center py-4 text-muted small">
-                    <div class="mb-3">No hay evaluaciones registradas para este curso. Elige una opción rápida:</div>
+                    <div class="mb-3">No hay evaluaciones registradas para este curso.</div>
                     <div class="d-flex justify-content-center gap-2 flex-wrap">
-                      <button (click)="aplicarPlantillaDesarrolloWeb()" class="btn btn-primary btn-sm">
-                        ⚡ Cargar Esquema Desarrollo Web (100%)
-                      </button>
-                      <button (click)="aplicarPlantillaBlackboardActual()" class="btn btn-outline-secondary btn-sm">
-                        📋 Cargar Plantilla General SENATI
+                      <button (click)="aplicarPlantillaOficialSenati()" class="btn btn-primary btn-sm">
+                        ⚡ Cargar Plantilla Oficial SENATI (100%)
                       </button>
                       <button (click)="openAddEvaluacionModal()" class="btn btn-senati-subtle btn-sm">
                         + Nueva Nota Manual

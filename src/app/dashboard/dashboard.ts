@@ -779,50 +779,21 @@ export class Dashboard implements OnInit, OnDestroy {
     }
   }
 
-  async aplicarPlantillaDesarrolloWeb() {
-    if (!this.selectedCursoCalculadoraId) return;
-    if (!confirm('¿Cargar el desglose oficial de Blackboard para Desarrollo de Aplicaciones Web?\n\n- Evaluaciones Parciales T01 a T05 (2% c/u = 10%)\n- Actitudes (10%)\n- Participación (10%)\n- Nota IP_Empresa (20%)\n- Entregable E01 (20%)\n- Examen Final (30%)\n\nSe reemplazarán las evaluaciones anteriores de este curso con las notas de Blackboard.')) return;
-
-    // Eliminar evaluaciones anteriores de este curso para evitar duplicados
-    const evalsActuales = this.evaluacionesCursoSeleccionado;
-    for (const ev of evalsActuales) {
-      if (ev.id) await this.supabaseService.deleteEvaluacion(ev.id);
-    }
-
-    const plantillaWeb = [
-      { nombre: 'Evaluación Parcial T01', peso: 2, nota: 20 },
-      { nombre: 'Evaluación Parcial T02', peso: 2, nota: 16 },
-      { nombre: 'Evaluación Parcial T03', peso: 2, nota: 20 },
-      { nombre: 'Evaluación Parcial T04', peso: 2, nota: 16 },
-      { nombre: 'Evaluación Parcial T05', peso: 2, nota: 20 },
-      { nombre: 'Actitudes', peso: 10, nota: 16 },
-      { nombre: 'Participación', peso: 10, nota: 17 },
-      { nombre: 'Nota IP_empresa', peso: 20, nota: 0.1 },
-      { nombre: 'Entregable - E01', peso: 20, nota: null },
-      { nombre: 'Examen Final', peso: 30, nota: null }
-    ];
-
-    for (const item of plantillaWeb) {
-      await this.supabaseService.addEvaluacion({
-        curso_id: this.selectedCursoCalculadoraId,
-        nombre_evaluacion: item.nombre,
-        ponderacion: item.peso,
-        nota_obtenida: item.nota
-      });
-    }
-    this.showToast('¡Desglose oficial de Blackboard cargado (100%)! 🚀', 'success');
-    await this.loadEvaluaciones();
-  }
-
   async crearPlantillaEvaluaciones(cursoId: string) {
-    const plantilla = [
-      { nombre: 'Foro Temático / Participación', peso: 10 },
-      { nombre: 'Entregable 01 (TR1)', peso: 20 },
-      { nombre: 'Entregable 02 (TR2)', peso: 20 },
-      { nombre: 'Evaluación Final / Proyecto', peso: 50 }
+    const plantillaOficial = [
+      { nombre: 'Evaluación Parcial T01', peso: 2 },
+      { nombre: 'Evaluación Parcial T02', peso: 2 },
+      { nombre: 'Evaluación Parcial T03', peso: 2 },
+      { nombre: 'Evaluación Parcial T04', peso: 2 },
+      { nombre: 'Evaluación Parcial T05', peso: 2 },
+      { nombre: 'Actitudes', peso: 10 },
+      { nombre: 'Participación', peso: 10 },
+      { nombre: 'Nota IP_empresa', peso: 20 },
+      { nombre: 'Entregable - E01', peso: 20 },
+      { nombre: 'Examen Final', peso: 30 }
     ];
 
-    for (const item of plantilla) {
+    for (const item of plantillaOficial) {
       await this.supabaseService.addEvaluacion({
         curso_id: cursoId,
         nombre_evaluacion: item.nombre,
@@ -832,12 +803,18 @@ export class Dashboard implements OnInit, OnDestroy {
     }
   }
 
-  async aplicarPlantillaBlackboardActual() {
+  async aplicarPlantillaOficialSenati() {
     if (!this.selectedCursoCalculadoraId) return;
-    if (!confirm('¿Cargar la plantilla estándar de Blackboard SENATI para este curso (TR1, TR2, Foro, Examen Final)?')) return;
+    if (!confirm('¿Cargar la plantilla oficial de Blackboard SENATI (100%) para este curso?\n\n- Evaluaciones Parciales T01 a T05 (2% c/u = 10%)\n- Actitudes (10%)\n- Participación (10%)\n- Nota IP_Empresa (20%)\n- Entregable E01 (20%)\n- Examen Final (30%)\n\nSe limpiarán las filas anteriores y se creará el esquema oficial listo para ingresar notas.')) return;
+
+    // Eliminar evaluaciones anteriores de este curso para evitar duplicados
+    const evalsActuales = this.evaluacionesCursoSeleccionado;
+    for (const ev of evalsActuales) {
+      if (ev.id) await this.supabaseService.deleteEvaluacion(ev.id);
+    }
 
     await this.crearPlantillaEvaluaciones(this.selectedCursoCalculadoraId);
-    this.showToast('¡Plantilla general SENATI cargada! 📋', 'success');
+    this.showToast('¡Plantilla oficial SENATI cargada (100%)! 🚀', 'success');
     await this.loadEvaluaciones();
   }
 
