@@ -1,3 +1,22 @@
+<!-- ==================================================== -->
+<!-- PANTALLA DE CARGA INICIAL (SPLASH SCREEN CENTRAL)    -->
+<!-- ==================================================== -->
+<div class="app-splash-screen" [class.splash-hidden]="!loadingApp">
+  <div class="splash-card">
+    <div class="splash-logo-wrap">
+      <div class="splash-glow-ring"></div>
+      <div class="splash-brand-badge">
+        <img src="logo.jpg" alt="Logo SENATI" class="splash-logo-img">
+      </div>
+    </div>
+    <h2 class="splash-title">PORTAL ACADÉMICO SENATI</h2>
+    <p class="splash-status-text">Cargando tu cuenta y sincronizando entorno...</p>
+    <div class="splash-bar-track">
+      <div class="splash-bar-fill"></div>
+    </div>
+  </div>
+</div>
+
 <div class="dashboard-wrapper">
   <!-- Barra de Navegación Sticky Unificada (Navbar + Subnav) -->
   <div class="sticky-top shadow-xs">

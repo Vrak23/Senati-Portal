@@ -157,6 +157,8 @@ export class Dashboard implements OnInit, OnDestroy {
 
   // Tema Oscuro Predeterminado
   isDarkMode = true;
+  // Estado de Carga Inicial (Splash Screen)
+  loadingApp = true;
 
   constructor(
     private supabaseService: SupabaseService,
@@ -167,12 +169,24 @@ export class Dashboard implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    this.loadingApp = true;
     this.loadTheme();
     this.blackboardFeedUrl = this.blackboardSyncService.getSavedFeedUrl();
     this.lastBlackboardSync = this.blackboardSyncService.getLastSyncDate();
-    await this.loadUserProfile();
-    await this.loadAllData();
-    this.checkNotifications();
+
+    try {
+      await this.loadUserProfile();
+      await this.loadAllData();
+      this.checkNotifications();
+    } catch (err) {
+      console.error('Error al inicializar la aplicación:', err);
+    } finally {
+      setTimeout(() => {
+        this.loadingApp = false;
+        this.cdr.detectChanges();
+      }, 350);
+    }
+
     this.timerHorario = setInterval(() => {
       this.analizarHorarios();
     }, 60000);
