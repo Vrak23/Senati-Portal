@@ -307,7 +307,7 @@ export class Dashboard implements OnInit, OnDestroy {
   async enableNotifications() {
     const perm = await this.notificationService.requestPermission();
     if (perm === 'granted') {
-      this.notificationService.notify('🔔 Notificaciones Activadas', {
+      this.notificationService.notify('Notificaciones Activadas', {
         body: 'Te avisaremos cuando tengas tareas de SENATI próximas a vencer.'
       });
       this.notificationService.checkDueTasks(this.tareas);
@@ -437,7 +437,7 @@ export class Dashboard implements OnInit, OnDestroy {
           estado: this.formTarea.estado,
           link_entrega: this.formTarea.link_entrega.trim()
         });
-        this.showToast('¡Tarea actualizada con éxito! ✏️', 'success');
+        this.showToast('¡Tarea actualizada con éxito!', 'success');
       } else {
         await this.supabaseService.addTarea({
           curso_id: this.formTarea.curso_id,
@@ -448,7 +448,7 @@ export class Dashboard implements OnInit, OnDestroy {
           estado: this.formTarea.estado,
           link_entrega: this.formTarea.link_entrega.trim()
         });
-        this.showToast('¡Tarea creada con éxito! 📝', 'success');
+        this.showToast('¡Tarea creada con éxito!', 'success');
       }
 
       this.modalTareaOpen = false;
@@ -465,11 +465,11 @@ export class Dashboard implements OnInit, OnDestroy {
       await this.supabaseService.updateTareaEstado(tarea.id, nuevoEstado);
       tarea.estado = nuevoEstado;
       if (nuevoEstado === 'entregado') {
-        this.showToast('¡Tarea completada y entregada! 🟢', 'success');
+        this.showToast('¡Tarea completada y entregada!', 'success');
       } else if (nuevoEstado === 'en_progreso') {
-        this.showToast('Tarea marcada en progreso 🔵', 'info');
+        this.showToast('Tarea marcada en progreso', 'info');
       } else {
-        this.showToast('Tarea marcada como pendiente 🟡', 'info');
+        this.showToast('Tarea marcada como pendiente', 'info');
       }
       this.cdr.detectChanges();
     } catch (err) {
@@ -483,7 +483,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
     try {
       await this.supabaseService.deleteTarea(tarea.id);
-      this.showToast('Tarea eliminada correctamente 🗑️', 'info');
+      this.showToast('Tarea eliminada correctamente', 'info');
       await this.loadTareas();
     } catch (err) {
       console.error('Error al eliminar tarea:', err);
@@ -546,7 +546,7 @@ export class Dashboard implements OnInit, OnDestroy {
           link_blackboard: this.formCurso.link_blackboard.trim(),
           link_teams: this.formCurso.link_teams.trim()
         });
-        this.showToast('¡Curso actualizado con éxito! ✏️', 'success');
+        this.showToast('¡Curso actualizado con éxito!', 'success');
       } else {
         const nuevoCurso = await this.supabaseService.addCurso({
           nombre: this.formCurso.nombre.trim(),
@@ -562,7 +562,7 @@ export class Dashboard implements OnInit, OnDestroy {
         if (nuevoCurso.id) {
           await this.crearPlantillaEvaluaciones(nuevoCurso.id);
         }
-        this.showToast('¡Curso creado con éxito! 📚', 'success');
+        this.showToast('¡Curso creado con éxito!', 'success');
       }
 
       this.modalCursoOpen = false;
@@ -580,7 +580,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
     try {
       await this.supabaseService.deleteCurso(curso.id);
-      this.showToast('Curso eliminado correctamente 🗑️', 'info');
+      this.showToast('Curso eliminado correctamente', 'info');
       await this.loadAllData();
       if (this.selectedCursoCalculadoraId === curso.id) {
         this.selectedCursoCalculadoraId = this.cursos[0]?.id || '';
@@ -747,7 +747,7 @@ export class Dashboard implements OnInit, OnDestroy {
           ponderacion: this.formEvaluacion.ponderacion,
           nota_obtenida: notaFinal
         });
-        this.showToast('Evaluación actualizada correctamente ✏️', 'success');
+        this.showToast('Evaluación actualizada correctamente', 'success');
       } else {
         await this.supabaseService.addEvaluacion({
           curso_id: this.formEvaluacion.curso_id,
@@ -755,7 +755,7 @@ export class Dashboard implements OnInit, OnDestroy {
           ponderacion: this.formEvaluacion.ponderacion,
           nota_obtenida: notaFinal
         });
-        this.showToast('¡Nueva evaluación registrada! 📝', 'success');
+        this.showToast('¡Nueva evaluación registrada!', 'success');
       }
 
       this.modalEvaluacionOpen = false;
@@ -786,7 +786,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
     try {
       await this.supabaseService.deleteEvaluacion(ev.id);
-      this.showToast('Evaluación eliminada 🗑️', 'info');
+      this.showToast('Evaluación eliminada', 'info');
       await this.loadEvaluaciones();
     } catch (err) {
       console.error('Error al eliminar evaluación:', err);
@@ -828,7 +828,7 @@ export class Dashboard implements OnInit, OnDestroy {
     }
 
     await this.crearPlantillaEvaluaciones(this.selectedCursoCalculadoraId);
-    this.showToast('¡Plantilla oficial SENATI cargada (100%)! 🚀', 'success');
+    this.showToast('¡Plantilla oficial SENATI cargada (100%)!', 'success');
     await this.loadEvaluaciones();
   }
 
@@ -849,7 +849,7 @@ export class Dashboard implements OnInit, OnDestroy {
         }
         await this.crearPlantillaEvaluaciones(curso.id);
       }
-      this.showToast('¡Esquema oficial de notas aplicado a todos tus cursos! 🚀', 'success');
+      this.showToast('¡Esquema oficial de notas aplicado a todos tus cursos!', 'success');
       await this.loadEvaluaciones();
     } catch (err: any) {
       console.error(err);
@@ -1103,7 +1103,7 @@ export class Dashboard implements OnInit, OnDestroy {
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
 
-    this.showToast('📅 Archivo de calendario descargado (.ics)');
+    this.showToast('Archivo de calendario descargado (.ics)');
   }
 
   // --- HORARIO DE CLASES SENATI ---
@@ -1412,7 +1412,7 @@ export class Dashboard implements OnInit, OnDestroy {
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
 
-    this.showToast('📅 Horario de clases descargado (.ics)');
+    this.showToast('Horario de clases descargado (.ics)');
   }
 
   aplicarPresetHorario(preset: string): void {

@@ -113,7 +113,7 @@
           <div class="mobile-menu-icon-box text-primary">
             <i class="bi bi-check2-square"></i>
           </div>
-          <span class="flex-grow-1 text-start">📌 Tareas Diarias</span>
+          <span class="flex-grow-1 text-start">Tareas Diarias</span>
           <span class="badge bg-primary-subtle text-primary small">{{ tareasPendientes }}</span>
         </button>
 
@@ -125,7 +125,7 @@
           <div class="mobile-menu-icon-box text-info">
             <i class="bi bi-calendar3"></i>
           </div>
-          <span class="flex-grow-1 text-start">📅 Horario de Clases</span>
+          <span class="flex-grow-1 text-start">Horario de Clases</span>
           <span *ngIf="claseEnVivo" class="badge bg-danger text-white small">LIVE</span>
         </button>
 
@@ -137,7 +137,7 @@
           <div class="mobile-menu-icon-box text-success">
             <i class="bi bi-folder2-open"></i>
           </div>
-          <span class="flex-grow-1 text-start">🚀 Entregables & Proyectos</span>
+          <span class="flex-grow-1 text-start">Entregables & Proyectos</span>
         </button>
 
         <button 
@@ -148,7 +148,7 @@
           <div class="mobile-menu-icon-box text-warning">
             <i class="bi bi-calculator"></i>
           </div>
-          <span class="flex-grow-1 text-start">🧮 Calculadora de Notas</span>
+          <span class="flex-grow-1 text-start">Calculadora de Notas</span>
         </button>
 
         <div class="hr my-1 opacity-25 border-top"></div>
@@ -162,7 +162,7 @@
             <i class="bi bi-arrow-repeat" [class.spin-anim]="isSyncingBlackboard"></i>
           </div>
           <span class="flex-grow-1 text-start">Sincronizar Blackboard</span>
-          <span *ngIf="lastBlackboardSync" class="badge bg-success-subtle text-success small" title="Sincronizado">✓</span>
+          <span *ngIf="lastBlackboardSync" class="badge bg-success-subtle text-success small" title="Sincronizado"><i class="bi bi-check-lg"></i></span>
         </button>
 
         <button 
@@ -233,26 +233,26 @@
           (click)="activeTab = 'tareas'" 
           class="btn btn-sm px-3 fw-semibold rounded-pill text-nowrap flex-shrink-0"
           [ngClass]="activeTab === 'tareas' ? 'btn-primary' : 'btn-ghost text-muted'">
-          📌 Tareas Diarias
+          Tareas Diarias
         </button>
         <button 
           (click)="activeTab = 'horarios'" 
           class="btn btn-sm px-3 fw-semibold rounded-pill position-relative text-nowrap flex-shrink-0"
           [ngClass]="activeTab === 'horarios' ? 'btn-primary' : 'btn-ghost text-muted'">
-          📅 Horario de Clases
+          Horario de Clases
           <span *ngIf="claseEnVivo" class="badge rounded-pill bg-danger ms-1 px-1 py-0" style="font-size: 0.65rem;" title="En vivo ahora">● LIVE</span>
         </button>
         <button 
           (click)="activeTab = 'proyectos'" 
           class="btn btn-sm px-3 fw-semibold rounded-pill text-nowrap flex-shrink-0"
           [ngClass]="activeTab === 'proyectos' ? 'btn-primary' : 'btn-ghost text-muted'">
-          🚀 Entregables & Proyectos
+          Entregables & Proyectos
         </button>
         <button 
           (click)="activeTab = 'calculadora'" 
           class="btn btn-sm px-3 fw-semibold rounded-pill text-nowrap flex-shrink-0"
           [ngClass]="activeTab === 'calculadora' ? 'btn-primary' : 'btn-ghost text-muted'">
-          🧮 Calculadora de Notas
+          Calculadora de Notas
         </button>
       </div>
 
@@ -264,7 +264,7 @@
           title="Sincronizar tareas y evaluaciones con Blackboard Learn">
           <i class="bi bi-arrow-repeat text-primary" [class.spin-anim]="isSyncingBlackboard"></i>
           <span>Blackboard</span>
-          <span *ngIf="lastBlackboardSync" class="badge bg-success-subtle text-success p-1 ms-1" style="font-size:0.65rem;" title="Sincronizado">✓</span>
+          <span *ngIf="lastBlackboardSync" class="badge bg-success-subtle text-success p-1 ms-1" style="font-size:0.65rem;" title="Sincronizado"><i class="bi bi-check-lg"></i></span>
         </button>
 
         <!-- Botón Exportar Calendario -->
@@ -691,9 +691,9 @@
                 <button 
                   *ngIf="p.estado !== 'entregado'" 
                   (click)="cambiarEstadoProyecto(p, 'entregado')" 
-                  class="btn btn-xs btn-outline-success" 
+                  class="btn btn-xs btn-outline-success d-inline-flex align-items-center gap-1" 
                   title="Marcar como entregado">
-                  ✓ Entregado
+                  <i class="bi bi-check-lg"></i> Entregado
                 </button>
                 <a [href]="getGoogleCalendarLink(p.titulo, p.descripcion || '', p.fecha_limite, p.link_github || p.link_drive)" 
                    target="_blank" 
@@ -817,7 +817,7 @@
                 {{ calculoCursoActual.puntosAcumulados }} <span class="text-muted fs-6 fw-normal">/ 20 pts</span>
               </div>
               <small class="text-muted d-block">
-                {{ calculoCursoActual.notaFinalNecesariaMinima !== null ? 'Necesitas ' + calculoCursoActual.notaFinalNecesariaMinima + ' en el ' + calculoCursoActual.porcentajeRestante + '% restante' : (calculoCursoActual.puntosAcumulados >= 10.5 ? '¡Ya alcanzaste los 10.5 pts! 🎉' : 'N/A') }}
+                {{ calculoCursoActual.notaFinalNecesariaMinima !== null ? 'Necesitas ' + calculoCursoActual.notaFinalNecesariaMinima + ' en el ' + calculoCursoActual.porcentajeRestante + '% restante' : (calculoCursoActual.puntosAcumulados >= 10.5 ? '¡Ya alcanzaste los 10.5 pts!' : 'N/A') }}
               </small>
             </div>
 
@@ -825,7 +825,7 @@
             <div class="col-12 col-sm-6 col-md-4">
               <span class="text-muted small d-block">Meta Cuadro de Honor (14+)</span>
               <div class="fs-4 fw-bold text-primary">
-                {{ calculoCursoActual.notaFinalNecesariaNotable !== null ? calculoCursoActual.notaFinalNecesariaNotable : (calculoCursoActual.puntosAcumulados >= 14 ? '¡Alcanzado! ⭐' : 'N/A') }}
+                {{ calculoCursoActual.notaFinalNecesariaNotable !== null ? calculoCursoActual.notaFinalNecesariaNotable : (calculoCursoActual.puntosAcumulados >= 14 ? '¡Alcanzado!' : 'N/A') }}
               </div>
               <small class="text-muted">Nota requerida en lo que falta</small>
             </div>
@@ -836,7 +836,7 @@
             <div class="d-flex justify-content-between align-items-center small text-muted mb-1 flex-wrap gap-1">
               <span>Puntos Acumulados: <strong [style.color]="getColorPromedio(calculoCursoActual.promedioPonderadoActual)">{{ calculoCursoActual.puntosAcumulados }} / 20 pts</strong> (Calificación actual: <strong>{{ calculoCursoActual.promedioPonderadoActual }}</strong>)</span>
               <span class="fw-semibold" [style.color]="getColorPromedio(calculoCursoActual.promedioPonderadoActual)">
-                {{ calculoCursoActual.puntosAcumulados >= 14 ? '⭐ Notable (Cuadro de Honor)' : (calculoCursoActual.puntosAcumulados >= 10.5 ? '✔️ Aprobado SENATI' : (calculoCursoActual.promedioPonderadoActual > 0 ? '📚 En Carrera' : 'Sin notas registradas')) }}
+                {{ calculoCursoActual.puntosAcumulados >= 14 ? 'Notable (Cuadro de Honor)' : (calculoCursoActual.puntosAcumulados >= 10.5 ? 'Aprobado SENATI' : (calculoCursoActual.promedioPonderadoActual > 0 ? 'En Carrera' : 'Sin notas registradas')) }}
               </span>
             </div>
             
@@ -849,39 +849,36 @@
               <div 
                 class="progress-bar progress-bar-striped progress-bar-animated transition-all" 
                 role="progressbar" 
-                [style.width.%]="(calculoCursoActual.puntosAcumulados / 20) * 100" 
-                [style.backgroundColor]="getColorPromedio(calculoCursoActual.promedioPonderadoActual)"
-                [attr.aria-valuenow]="calculoCursoActual.puntosAcumulados" 
-                aria-valuemin="0" 
-                aria-valuemax="20">
+                [style.width.%]="(calculoCursoActual.puntosAcumulados / 20) * 100"
+                [style.backgroundColor]="getColorPromedio(calculoCursoActual.promedioPonderadoActual)">
               </div>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center text-muted mt-1 flex-wrap gap-1" style="font-size: 0.72rem;">
-              <span>0.0 pts</span>
-              <span class="text-danger fw-semibold"><i class="bi bi-flag-fill me-1"></i>10.5 (Meta Aprobación)</span>
-              <span class="text-success fw-semibold"><i class="bi bi-star-fill me-1"></i>14.0 (Meta Notable)</span>
-              <span>20.0 pts</span>
+            <div class="d-flex justify-content-between small text-muted mt-1" style="font-size: 0.72rem;">
+              <span>0 pts (Inicio)</span>
+              <span class="text-danger fw-semibold">10.5 (Mínimo Aprobatorio)</span>
+              <span class="text-success fw-semibold">14.0 (Cuadro de Honor)</span>
+              <span>20 pts (Máximo)</span>
             </div>
           </div>
         </div>
 
-        <!-- Tabla de Evaluaciones con Colores Completos -->
-        <div class="card border rounded-3 bg-white shadow-xs overflow-hidden">
-          <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom">
-            <div class="d-flex align-items-center gap-2">
-              <i class="bi bi-card-checklist text-primary fs-5"></i>
-              <h6 class="fw-bold mb-0 text-dark">Evaluaciones del Curso</h6>
+        <!-- Tabla Desglose de Evaluaciones y Pesos -->
+        <div class="card senati-card border-0 p-0 overflow-hidden">
+          <div class="card-header bg-transparent border-bottom d-flex justify-content-between align-items-center py-3 px-3 px-md-4 flex-wrap gap-2">
+            <div>
+              <h6 class="fw-bold mb-0 text-dark">Desglose de Calificaciones</h6>
+              <small class="text-muted" style="font-size: 0.75rem;">Ingresa las notas que vas obteniendo; los cálculos se actualizan al instante</small>
             </div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
               <button (click)="openAddEvaluacionModal()" class="btn btn-senati-subtle btn-sm d-flex align-items-center gap-1 shadow-xs">
                 <i class="bi bi-plus-lg"></i> Nueva Nota
               </button>
               <button (click)="aplicarPlantillaOficialSenati()" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1 shadow-xs" title="Cargar esquema oficial de Blackboard SENATI para este curso seleccionado">
-                ⚡ Plantilla Este Curso
+                Plantilla Este Curso
               </button>
               <button (click)="aplicarPlantillaATodosLosCursos()" class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-xs" title="Aplicar el esquema oficial de Blackboard a TODOS tus cursos registrados">
-                ✨ Aplicar a Todos los Cursos
+                Aplicar a Todos los Cursos
               </button>
             </div>
           </div>
@@ -928,10 +925,10 @@
                     <div class="mb-3">No hay evaluaciones registradas para este curso. Elige una opción:</div>
                     <div class="d-flex justify-content-center gap-2 flex-wrap">
                       <button (click)="aplicarPlantillaOficialSenati()" class="btn btn-primary btn-sm">
-                        ⚡ Cargar en Este Curso
+                        Cargar en Este Curso
                       </button>
                       <button (click)="aplicarPlantillaATodosLosCursos()" class="btn btn-outline-primary btn-sm">
-                        ✨ Aplicar a Todos los Cursos
+                        Aplicar a Todos los Cursos
                       </button>
                       <button (click)="openAddEvaluacionModal()" class="btn btn-senati-subtle btn-sm">
                         + Nueva Nota Manual
@@ -1310,7 +1307,7 @@
       <div class="modal-content border-0 shadow-lg">
         <div class="modal-header border-bottom py-3 px-3 px-md-4">
           <div class="d-flex align-items-center gap-2">
-            <span class="fs-5">⚡</span>
+            <i class="bi bi-arrow-repeat text-primary fs-5"></i>
             <div>
               <h6 class="modal-title fw-bold text-dark mb-0">Sincronizar con Blackboard SENATI</h6>
               <small class="text-muted" style="font-size: 0.72rem;">Importa tareas, fechas límites y entregables oficiales</small>
@@ -1322,7 +1319,7 @@
         <div class="modal-body p-3 p-md-4">
           <!-- Guía Paso a Paso -->
           <div class="p-3 rounded-3 bg-light border mb-3">
-            <div class="fw-bold small text-dark mb-2">📌 ¿Cómo obtener tu enlace iCal de Blackboard?</div>
+            <div class="fw-bold small text-dark mb-2">¿Cómo obtener tu enlace iCal de Blackboard?</div>
             <ol class="small text-muted ps-3 mb-0" style="font-size: 0.8rem; line-height: 1.5;">
               <li>Inicia sesión en <a href="https://senati.blackboard.com/" target="_blank" class="fw-medium text-primary">senati.blackboard.com</a>.</li>
               <li>En el menú izquierdo, entra a <strong>Calendario</strong>.</li>
@@ -1380,7 +1377,7 @@
 
           <!-- Resumen de Resultados -->
           <div *ngIf="blackboardSyncResult" class="alert alert-success py-2 px-3 small mt-3 mb-0 rounded-3">
-            <div class="fw-bold mb-1">✓ Sincronización Exitosa:</div>
+            <div class="fw-bold mb-1 d-flex align-items-center gap-1"><i class="bi bi-check-circle-fill text-success"></i> Sincronización Exitosa:</div>
             <ul class="mb-0 ps-3">
               <li><strong>{{ blackboardSyncResult.added }}</strong> tareas nuevas agregadas.</li>
               <li><strong>{{ blackboardSyncResult.updated }}</strong> tareas actualizadas con nuevas fechas.</li>
@@ -1390,7 +1387,7 @@
 
           <!-- Última sincronización -->
           <div *ngIf="lastBlackboardSync" class="text-muted small mt-3 text-center" style="font-size: 0.73rem;">
-            🕒 Última sincronización: {{ formatDate(lastBlackboardSync) }}
+            Última sincronización: {{ formatDate(lastBlackboardSync) }}
           </div>
         </div>
 

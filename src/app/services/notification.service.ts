@@ -60,13 +60,13 @@ export class NotificationService {
 
       if (diff > 0 && diff <= oneDayMs) {
         const hoursLeft = Math.max(1, Math.round(diff / (1000 * 60 * 60)));
-        this.notify(`⏰ Tarea Próxima a Vencer: ${tarea.titulo}`, {
+        this.notify(`Tarea Próxima a Vencer: ${tarea.titulo}`, {
           body: `Curso: ${tarea.curso?.nombre || 'General'}\nVence en aproximadamente ${hoursLeft} hora(s).`,
           tag: `task-${tarea.id}`
         });
         this.notifiedTaskIds.add(tarea.id);
       } else if (diff <= 0 && diff >= -oneDayMs) {
-        this.notify(`⚠️ Tarea Vencida: ${tarea.titulo}`, {
+        this.notify(`Tarea Vencida: ${tarea.titulo}`, {
           body: `Curso: ${tarea.curso?.nombre || 'General'}\nFecha límite superada. ¡Revisa tu entrega!`,
           tag: `task-${tarea.id}`
         });
